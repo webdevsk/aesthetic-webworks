@@ -1,0 +1,15 @@
+{
+    "arrowParens": "always",
+    "bracketSpacing": true,
+    "htmlWhitespaceSensitivity": "css",
+    "bracketSameLine": true,
+    "printWidth": 120,
+    "proseWrap": "preserve",
+    "quoteProps": "as-needed",
+    "semi": false,
+    "trailingComma": "es5",
+    "plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
+    "importOrder": ["^react$", "^next(/.*)?$", "next-themes", "@/*", "<THIRD_PARTY_MODULES>"],
+    "importOrderSeparation": false,
+    "importOrderSortSpecifiers": true
+}
