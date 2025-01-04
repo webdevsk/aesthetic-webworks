@@ -53,8 +53,7 @@ export const AchievementsBadge = () => {
       </div>
       <AnimatePresence mode="wait">
         <motion.p
-            key={currentAchievementIndex}
-
+          key={currentAchievementIndex}
           variants={variants}
           initial="initial"
           animate="animate"

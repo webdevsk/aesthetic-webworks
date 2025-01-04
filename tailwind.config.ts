@@ -70,6 +70,9 @@ export default {
       spacing: {
         huge: "7.5vw",
       },
+	  lineHeight: {
+		tight: "1.15",
+	  },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
