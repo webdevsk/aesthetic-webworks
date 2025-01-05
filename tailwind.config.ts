@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+import plugin from "tailwindcss/plugin"
 
 export default {
   darkMode: ["class"],
@@ -18,7 +19,7 @@ export default {
           lg: "100%",
           xl: "100%",
           "2xl": "100%",
-		  "3xl": "100%",
+          "3xl": "100%",
         },
       },
       colors: {
@@ -70,9 +71,9 @@ export default {
       spacing: {
         huge: "7.5vw",
       },
-	  lineHeight: {
-		tight: "1.15",
-	  },
+      lineHeight: {
+        tight: "1.15",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -93,5 +94,56 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    plugin(function ({ addComponents }) {
+      addComponents({
+        ".variant-h1": {
+          fontSize: "clamp(2rem, 7.5vw, 7.5rem)",
+          lineHeight: "1.1",
+          fontWeight: "600",
+        },
+        ".variant-h2": {
+          fontSize: "clamp(1.8rem, 3.5vw, 5rem)",
+          lineHeight: "1.4",
+          fontWeight: "600",
+        },
+        ".variant-h3": {
+          fontSize: "clamp(1.5rem, 3.5vw, 3.5rem)",
+          lineHeight: "1.2",
+          fontWeight: "600",
+        },
+        ".variant-h4": {
+          fontSize: "24px",
+          lineHeight: "1.3",
+          fontWeight: "600",
+        },
+        ".variant-h5": {
+          fontSize: "1.5vw",
+          lineHeight: "1.4",
+          fontWeight: "400",
+        },
+        ".variant-h6": {
+          fontSize: "16px",
+          lineHeight: "1.5",
+          fontWeight: "500",
+        },
+        ".variant-p": {
+          fontSize: "16px",
+          lineHeight: "1.6",
+          fontWeight: "400",
+        },
+        ".variant-small": {
+          fontSize: "14px",
+          lineHeight: "1.6",
+          fontWeight: "400",
+        },
+        ".variant-xs": {
+          fontSize: "12px",
+          lineHeight: "1.6",
+          fontWeight: "400",
+        },
+      })
+    }),
+  ],
 } satisfies Config
