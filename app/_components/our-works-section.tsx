@@ -8,48 +8,14 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { motion, useInView } from "motion/react"
 import Link from "next/link"
-
-interface Project {
-  id: string
-  title: string
-  image: string
-  categories: string[]
-  isLatest?: boolean
-}
-const projects: Project[] = [
-  {
-    id: "romans-partners",
-    title: "Romans & Partners",
-    image: "/01_Estate-Agency-Web-Design-London.jpg", // Replace with actual image URL
-    categories: ["UI/UX Design", "Property Portal"],
-    isLatest: true,
-  },
-  {
-    id: "alveena-casa",
-    title: "Alveena Casa",
-    image: "/01_Estate-Agency-Web-Design-London.jpg", // Replace with actual image URL
-    categories: ["UI/UX Design", "E-Commerce"],
-  },
-  {
-    id: "alveena-casa2",
-    title: "Alveena Casa",
-    image: "/01_Estate-Agency-Web-Design-London.jpg", // Replace with actual image URL
-    categories: ["UI/UX Design", "E-Commerce"],
-  },
-  {
-    id: "alveena-casa3",
-    title: "Alveena Casa",
-    image: "/01_Estate-Agency-Web-Design-London.jpg", // Replace with actual image URL
-    categories: ["UI/UX Design", "E-Commerce"],
-  },
-]
+import { projects } from "@/data/data"
 
 export const OurWorksSection = () => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true })
   return (
     <HorizontalScrollTrigger>
-      <div className="flex h-dvh items-center">
+      <div className="flex h-dvh items-center py-[7.5vw]">
         <div ref={ref} className="flex flex-nowrap space-x-[2.5vw] px-[5.625rem]">
           <Heading />
           {projects.map((project, index) => (
@@ -61,18 +27,18 @@ export const OurWorksSection = () => {
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}>
               <Card className="relative aspect-[1.25] min-w-[43.125vw] overflow-hidden bg-transparent text-primary-foreground ring-0 ring-primary hover:ring-4 transition-shadow duration-300">
-                <Image
+                {!!project.image && <Image
                   src={project.image}
                   alt={project.title}
                   fill
                   className="inset-0 -z-10 object-cover"
                   priority={index === 0}
-                />
+                />}
                 <div className="flex size-full flex-col gap-4">
                   <div className="self-end">{project.isLatest && <Badge>Latest</Badge>}</div>
                   <h3 className="variant-h3 mt-auto">{project.title}</h3>
                   <div className="flex flex-wrap gap-4">
-                    {project.categories.map((category) => (
+                    {project.categories?.map((category) => (
                       <Badge key={category} variant="outline">
                         {category}
                       </Badge>

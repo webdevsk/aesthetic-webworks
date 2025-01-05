@@ -82,6 +82,9 @@ export default {
       animation: {
         gradientMove: "gradientMove 3s linear infinite",
       },
+      backgroundImage: {
+        radialToBr: "radial-gradient(circle at 75% 140%,#545cff 0,transparent 35%)",
+      },
       keyframes: {
         gradientMove: {
           "0%": {
