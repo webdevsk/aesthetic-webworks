@@ -114,12 +114,12 @@ export default {
           fontWeight: "600",
         },
         ".variant-h4": {
-          fontSize: "24px",
-          lineHeight: "1.3",
-          fontWeight: "600",
+          fontSize: "1.5vw",
+          lineHeight: "1.4",
+          fontWeight: "400",
         },
         ".variant-h5": {
-          fontSize: "1.5vw",
+          fontSize: "24px",
           lineHeight: "1.4",
           fontWeight: "400",
         },
