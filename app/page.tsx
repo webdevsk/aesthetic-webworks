@@ -5,6 +5,7 @@ import { OurWorksSection } from "./_components/our-works-section"
 import { PartnersSection } from "./_components/partners-section"
 import { TrustSection } from "./_components/trust-section"
 import { WhatWeDoSection } from "./_components/what-we-do-section"
+import { AchievementsSection } from "./_components/achievements-section"
 
 const Page = () => {
   return (
@@ -19,9 +20,10 @@ const Page = () => {
         </div>
       </section>
       <PartnersSection />
-      <ScrollMarqeue className="whitespace-nowrap px-[50dvw] font-semibold leading-tight text-[9.375vw]">
+      <ScrollMarqeue className="whitespace-nowrap px-[50dvw] font-semibold leading-tight py-huge text-[9.375vw]">
         Elevate your digital presence
       </ScrollMarqeue>
+      <AchievementsSection/>
       <div className="h-screen"></div>
     </>
   )
