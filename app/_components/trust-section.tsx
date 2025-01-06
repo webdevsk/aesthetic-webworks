@@ -1,4 +1,3 @@
-import { ParallaxImage } from "@/components/parallax-image"
 import { Card } from "@/components/ui/card"
 
 export function TrustSection() {
@@ -35,7 +34,6 @@ export function TrustSection() {
           </Card>
         </div>
 
-        <ParallaxImage className="mt-huge aspect-[1.75176]" src="/AW_Team_01-800x600.jpg" alt="Dev" />
       </div>
     </section>
   )
