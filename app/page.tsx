@@ -1,4 +1,5 @@
 import { ParallaxImage } from "@/components/parallax-image"
+import { ScrollMarqeue } from "@/components/scroll-marqeue"
 import { HeroSection } from "./_components/hero-section"
 import { OurWorksSection } from "./_components/our-works-section"
 import { PartnersSection } from "./_components/partners-section"
@@ -18,6 +19,10 @@ const Page = () => {
         </div>
       </section>
       <PartnersSection />
+      <ScrollMarqeue className="whitespace-nowrap px-[50dvw] font-semibold leading-tight text-[9.375vw]">
+        Elevate your digital presence
+      </ScrollMarqeue>
+      <div className="h-screen"></div>
     </>
   )
 }
