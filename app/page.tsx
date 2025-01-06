@@ -8,6 +8,7 @@ import { WhatWeDoSection } from "./_components/what-we-do-section"
 import { AchievementsSection } from "./_components/achievements-section"
 import { EstablishedYearSection } from "./_components/establishedyear-section"
 import { ServicesSection } from "./_components/services-section"
+import { TestimonialsSection } from "./_components/testimonials-section"
 
 const Page = () => {
   return (
@@ -28,6 +29,7 @@ const Page = () => {
       <AchievementsSection/>
       <EstablishedYearSection />
       <ServicesSection />
+      <TestimonialsSection />
       <div className="h-screen"></div>
     </>
   )
