@@ -20,8 +20,8 @@ const buttonVariants = cva(
       },
       size: {
         default: "px-12 py-6",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
+        sm: "py-5 px-10",
+        lg: "h-10 px-8",
         icon: "h-9 w-9",
       },
     },
@@ -67,11 +67,7 @@ const Button = ({ className, variant, size, ref, children, ...props }: ButtonPro
       className={cn(buttonVariants({ variant, size, className }), "overflow-y-hidden")}
       ref={ref}
       {...props}>
-      <motion.span
-        ref={scope}
-      >
-        {children}
-      </motion.span>
+      <motion.span ref={scope}>{children}</motion.span>
     </motion.button>
   )
 }

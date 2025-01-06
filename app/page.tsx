@@ -30,7 +30,6 @@ const Page = () => {
       <EstablishedYearSection />
       <ServicesSection />
       <TestimonialsSection />
-      <div className="h-screen"></div>
     </>
   )
 }
