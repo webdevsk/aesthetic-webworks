@@ -112,8 +112,8 @@ export default {
           fontWeight: "600",
         },
         ".variant-h3": {
-          fontSize: "clamp(1.5rem, 3.5vw, 3.5rem)",
-          lineHeight: "1.2",
+          fontSize: "clamp(1.5rem, 2.5vw, 3.5rem)",
+          lineHeight: "1.4",
           fontWeight: "600",
         },
         ".variant-h4": {

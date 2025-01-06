@@ -36,7 +36,7 @@ export const OurWorksSection = () => {
                 />}
                 <div className="flex size-full flex-col gap-4">
                   <div className="self-end">{project.isLatest && <Badge>Latest</Badge>}</div>
-                  <h3 className="variant-h3 mt-auto">{project.title}</h3>
+                  <h2 className="variant-h2 mt-auto">{project.title}</h2>
                   <div className="flex flex-wrap gap-4">
                     {project.categories?.map((category) => (
                       <Badge key={category} variant="outline">
