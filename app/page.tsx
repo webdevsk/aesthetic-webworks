@@ -6,6 +6,7 @@ import { PartnersSection } from "./_components/partners-section"
 import { TrustSection } from "./_components/trust-section"
 import { WhatWeDoSection } from "./_components/what-we-do-section"
 import { AchievementsSection } from "./_components/achievements-section"
+import { EstablishedYearSection } from "./_components/establishedyear-section"
 
 const Page = () => {
   return (
@@ -24,6 +25,7 @@ const Page = () => {
         Elevate your digital presence
       </ScrollMarqeue>
       <AchievementsSection/>
+      <EstablishedYearSection />
       <div className="h-screen"></div>
     </>
   )
