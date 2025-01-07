@@ -1,90 +1,75 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-interface User {
-  id: number
-  username: string
+interface Stats {
+  projects: number
+  categories: number
+  testimonials: number
 }
 
 export default function AdminPage() {
-  const router = useRouter()
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState<Stats>({
+    projects: 0,
+    categories: 0,
+    testimonials: 0,
+  })
 
   useEffect(() => {
-    async function fetchUser() {
+    async function fetchStats() {
       try {
-        const response = await fetch("/api/auth/me")
-        if (!response.ok) {
-          throw new Error("Not authenticated")
-        }
-        const data = await response.json()
-        setUser(data)
+        const [projects, categories, testimonials] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`).then((res) => res.json()),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`).then((res) => res.json()),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/testimonials`).then((res) => res.json()),
+        ])
+
+        setStats({
+          projects: projects.length,
+          categories: categories.length,
+          testimonials: testimonials.length,
+        })
       } catch (error) {
-        router.push("/auth/signin")
-      } finally {
-        setLoading(false)
+        console.error("Failed to fetch stats:", error)
       }
     }
 
-    fetchUser()
-  }, [router])
-
-  async function handleSignOut() {
-    try {
-      await fetch("/api/auth/signout", { method: "POST" })
-      router.push("/auth/signin")
-      router.refresh()
-    } catch (error) {
-      console.error("Failed to sign out:", error)
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="container py-10">
-        <p>Loading...</p>
-      </div>
-    )
-  }
+    fetchStats()
+  }, [])
 
   return (
-    <div className="container py-10">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <Button variant="outline" onClick={handleSignOut}>
-          Sign Out
-        </Button>
+    <div>
+      <h1 className="mb-8 text-3xl font-bold">Dashboard Overview</h1>
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Projects</CardTitle>
+            <CardDescription>Total number of projects</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{stats.projects}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Categories</CardTitle>
+            <CardDescription>Total number of categories</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{stats.categories}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Testimonials</CardTitle>
+            <CardDescription>Total number of testimonials</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{stats.testimonials}</p>
+          </CardContent>
+        </Card>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Welcome, {user?.username}!</CardTitle>
-          <CardDescription>This is your admin dashboard.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4">
-            <Button variant="outline" asChild>
-              <a href="/admin/projects">Manage Projects</a>
-            </Button>
-            <Button variant="outline" asChild>
-              <a href="/admin/categories">Manage Categories</a>
-            </Button>
-            <Button variant="outline" asChild>
-              <a href="/admin/testimonials">Manage Testimonials</a>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }
