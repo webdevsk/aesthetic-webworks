@@ -16,9 +16,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { adminApi } from "@/lib/api-client"
-import type { Category } from "@/lib/api-client"
+import { createCategory, deleteCategory, getCategories, updateCategory } from "@/lib/actions"
+import type { Category } from "@/lib/actions"
 import { Edit, Plus, Trash2 } from "lucide-react"
+import { toast } from "sonner"
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
@@ -26,6 +27,7 @@ export default function CategoriesPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [title, setTitle] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     fetchCategories()
@@ -40,41 +42,65 @@ export default function CategoriesPage() {
   }, [selectedCategory])
 
   async function fetchCategories() {
-    try {
-      const data = await adminApi.categories.list()
-      setCategories(data)
-    } catch (error) {
-      console.error("Failed to fetch categories:", error)
-    }
+    toast.promise(
+      async () => {
+        const result = await getCategories()
+        if ("error" in result) {
+          throw new Error(result.error)
+        }
+        setCategories(result.data)
+      },
+      {
+        loading: "Loading categories...",
+        success: "Categories loaded",
+        error: (err) => err.message || "Failed to fetch categories",
+      }
+    )
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setIsLoading(true)
 
     try {
-      if (selectedCategory) {
-        await adminApi.categories.update(selectedCategory.id, { title })
-      } else {
-        await adminApi.categories.create({ title })
+      const result = selectedCategory
+        ? await updateCategory(selectedCategory.id, { title })
+        : await createCategory({ title })
+
+      if ("error" in result) {
+        toast.error(result.error)
+        return
       }
 
       setIsOpen(false)
       setSelectedCategory(null)
       setTitle("")
+      toast.success(selectedCategory ? "Category updated" : "Category created")
       fetchCategories()
     } catch (error) {
-      console.error("Failed to save category:", error)
+      toast.error("Failed to save category")
+    } finally {
+      setIsLoading(false)
     }
   }
 
   async function handleDelete(category: Category) {
+    setIsLoading(true)
     try {
-      await adminApi.categories.delete(category.id)
+      const result = await deleteCategory(category.id)
+      if ("error" in result) {
+        toast.error(result.error)
+        return
+      }
+
       setIsDeleteDialogOpen(false)
       setSelectedCategory(null)
-      fetchCategories()
+      toast.success("Category deleted")
+      // No need to manually fetch categories as the server action handles revalidation
     } catch (error) {
-      console.error("Failed to delete category:", error)
+      toast.error("Failed to delete category")
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -145,10 +171,10 @@ export default function CategoriesPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="title">Title</Label>
-              <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+              <Input id="title" name="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
             </div>
-            <Button type="submit" className="w-full">
-              {selectedCategory ? "Save Changes" : "Create Category"}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Loading..." : selectedCategory ? "Save Changes" : "Create Category"}
             </Button>
           </form>
         </DialogContent>
@@ -164,8 +190,8 @@ export default function CategoriesPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => selectedCategory && handleDelete(selectedCategory)}>
-              Delete
+            <AlertDialogAction onClick={() => selectedCategory && handleDelete(selectedCategory)} disabled={isLoading}>
+              {isLoading ? "Loading..." : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

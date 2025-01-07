@@ -12,109 +12,100 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { adminApi } from "@/lib/api-client"
-import type { Project } from "@/lib/api-client"
+import { createProject, deleteProject, getProjects, updateProject } from "@/lib/actions"
+import type { Project } from "@/lib/actions"
 import { Edit, Plus, Trash2 } from "lucide-react"
+import { toast } from "sonner"
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([])
-  const [categories, setCategories] = useState<string[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
-  const [formData, setFormData] = useState({
-    title: "",
-    image: null as File | null,
-    isLatest: false,
-    categories: [] as string[],
-  })
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     fetchProjects()
-    fetchCategories()
   }, [])
 
-  useEffect(() => {
-    if (selectedProject) {
-      setFormData({
-        title: selectedProject.title,
-        image: null,
-        isLatest: selectedProject.isLatest,
-        categories: selectedProject.categories,
-      })
-    } else {
-      setFormData({
-        title: "",
-        image: null,
-        isLatest: false,
-        categories: [],
-      })
-    }
-  }, [selectedProject])
-
   async function fetchProjects() {
-    try {
-      const data = await adminApi.projects.list()
-      setProjects(data)
-    } catch (error) {
-      console.error("Failed to fetch projects:", error)
-    }
+    toast.promise(
+      async () => {
+        const result = await getProjects()
+        if ("error" in result) {
+          throw new Error(result.error)
+        }
+        setProjects(result.data)
+      },
+      {
+        loading: "Loading projects...",
+        success: "Projects loaded",
+        error: (err) => err.message || "Failed to fetch projects",
+      }
+    )
   }
 
-  async function fetchCategories() {
-    try {
-      const data = await adminApi.categories.list()
-      setCategories(data.map((cat) => cat.title))
-    } catch (error) {
-      console.error("Failed to fetch categories:", error)
-    }
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    const formDataToSend = new FormData()
-    formDataToSend.append("title", formData.title)
-    if (formData.image) {
-      formDataToSend.append("image", formData.image)
+    const formData = new FormData(e.currentTarget)
+    const imageFile = formData.get("image") as File
+
+    if (imageFile && imageFile.size > 0) {
+      if (imageFile.size > 1024 * 1024) {
+        toast.error("Image size must be less than 1MB")
+        return
+      }
+
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"]
+      if (!allowedTypes.includes(imageFile.type)) {
+        toast.error("Only JPEG, PNG and WebP images are allowed")
+        return
+      }
     }
-    formDataToSend.append("isLatest", String(formData.isLatest))
-    formDataToSend.append("categories", formData.categories.join(","))
+
+    setIsLoading(true)
 
     try {
-      if (selectedProject) {
-        await adminApi.projects.update(selectedProject.id, formDataToSend)
-      } else {
-        await adminApi.projects.create(formDataToSend)
+      const result = selectedProject ? await updateProject(selectedProject.id, formData) : await createProject(formData)
+
+      if ("error" in result) {
+        toast.error(result.error)
+        return
       }
 
       setIsOpen(false)
       setSelectedProject(null)
-      setFormData({
-        title: "",
-        image: null,
-        isLatest: false,
-        categories: [],
-      })
+      toast.success(selectedProject ? "Project updated" : "Project created")
       fetchProjects()
     } catch (error) {
-      console.error("Failed to save project:", error)
+      toast.error("Failed to save project")
+    } finally {
+      setIsLoading(false)
     }
   }
 
   async function handleDelete(project: Project) {
+    setIsLoading(true)
     try {
-      await adminApi.projects.delete(project.id)
+      const result = await deleteProject(project.id)
+      if ("error" in result) {
+        toast.error(result.error)
+        return
+      }
+
       setIsDeleteDialogOpen(false)
       setSelectedProject(null)
+      toast.success("Project deleted")
       fetchProjects()
     } catch (error) {
-      console.error("Failed to delete project:", error)
+      toast.error("Failed to delete project")
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -136,9 +127,8 @@ export default function ProjectsPage() {
         <TableHeader>
           <TableRow>
             <TableHead>Title</TableHead>
-            <TableHead>Categories</TableHead>
+            <TableHead>Slug</TableHead>
             <TableHead>Latest</TableHead>
-            <TableHead>Image</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -146,15 +136,8 @@ export default function ProjectsPage() {
           {projects.map((project) => (
             <TableRow key={project.id}>
               <TableCell>{project.title}</TableCell>
-              <TableCell>{project.categories.join(", ")}</TableCell>
+              <TableCell>{project.slug}</TableCell>
               <TableCell>{project.isLatest ? "Yes" : "No"}</TableCell>
-              <TableCell>
-                {project.image ? (
-                  <img src={project.image} alt={project.title} className="h-16 w-16 rounded object-cover" />
-                ) : (
-                  "No image"
-                )}
-              </TableCell>
               <TableCell>
                 <div className="flex gap-2">
                   <Button
@@ -195,64 +178,21 @@ export default function ProjectsPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                required
-              />
+              <Input id="title" name="title" defaultValue={selectedProject?.title} required />
             </div>
             <div>
               <Label htmlFor="image">Image</Label>
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    image: e.target.files?.[0] || null,
-                  })
-                }
-              />
+              <Input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp" />
+              <p className="mt-1 text-sm text-muted-foreground">
+                Maximum file size: 1MB. Allowed formats: JPEG, PNG, WebP
+              </p>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isLatest"
-                checked={formData.isLatest}
-                onCheckedChange={(checked) => setFormData({ ...formData, isLatest: checked as boolean })}
-              />
-              <Label htmlFor="isLatest">Mark as Latest Project</Label>
+              <input type="checkbox" id="isLatest" name="isLatest" defaultChecked={selectedProject?.isLatest} />
+              <Label htmlFor="isLatest">Latest Project</Label>
             </div>
-            <div>
-              <Label>Categories</Label>
-              <div className="grid grid-cols-2 gap-2">
-                {categories.map((category) => (
-                  <div key={category} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={category}
-                      checked={formData.categories.includes(category)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setFormData({
-                            ...formData,
-                            categories: [...formData.categories, category],
-                          })
-                        } else {
-                          setFormData({
-                            ...formData,
-                            categories: formData.categories.filter((cat) => cat !== category),
-                          })
-                        }
-                      }}
-                    />
-                    <Label htmlFor={category}>{category}</Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <Button type="submit" className="w-full">
-              {selectedProject ? "Save Changes" : "Create Project"}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Loading..." : selectedProject ? "Save Changes" : "Create Project"}
             </Button>
           </form>
         </DialogContent>
@@ -268,8 +208,8 @@ export default function ProjectsPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => selectedProject && handleDelete(selectedProject)}>
-              Delete
+            <AlertDialogAction onClick={() => selectedProject && handleDelete(selectedProject)} disabled={isLoading}>
+              {isLoading ? "Loading..." : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

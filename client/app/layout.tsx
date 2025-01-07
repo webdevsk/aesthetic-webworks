@@ -1,28 +1,24 @@
-import type { Metadata } from "next";
-import { Onest } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import { Toaster } from "@/components/ui/sonner"
+import "./globals.css"
 
-const onest = Onest({
+const inter = Inter({
   subsets: ["latin"],
-});
+})
 
 export const metadata: Metadata = {
-  title: "ArtistsWeb Clone",
-  description: "A NextJS clone of ArtistsWeb",
-};
+  title: "Artists Web",
+  description: "A portfolio website for artists",
+}
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body
-        className={`${onest.className} bg-white antialiased`}
-      >
+      <body className={inter.className}>
         {children}
+        <Toaster richColors position="bottom-right" />
       </body>
     </html>
-  );
+  )
 }
