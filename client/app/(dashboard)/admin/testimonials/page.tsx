@@ -1,34 +1,31 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
-import { Plus } from "lucide-react"
-
-interface Testimonial {
-  id: string
-  author: {
-    name: string
-    company?: string
-    image?: string
-  }
-  content: string
-}
+import { adminApi } from "@/lib/api-client"
+import type { Testimonial } from "@/lib/api-client"
+import { Edit, Plus, Trash2 } from "lucide-react"
 
 export default function TestimonialsPage() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [isOpen, setIsOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null)
   const [formData, setFormData] = useState({
     authorName: "",
     authorCompany: "",
@@ -40,10 +37,27 @@ export default function TestimonialsPage() {
     fetchTestimonials()
   }, [])
 
+  useEffect(() => {
+    if (selectedTestimonial) {
+      setFormData({
+        authorName: selectedTestimonial.author.name,
+        authorCompany: selectedTestimonial.author.company || "",
+        authorImage: null,
+        content: selectedTestimonial.content,
+      })
+    } else {
+      setFormData({
+        authorName: "",
+        authorCompany: "",
+        authorImage: null,
+        content: "",
+      })
+    }
+  }, [selectedTestimonial])
+
   async function fetchTestimonials() {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/testimonials`)
-      const data = await response.json()
+      const data = await adminApi.testimonials.list()
       setTestimonials(data)
     } catch (error) {
       console.error("Failed to fetch testimonials:", error)
@@ -62,23 +76,34 @@ export default function TestimonialsPage() {
     formDataToSend.append("content", formData.content)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/testimonials`, {
-        method: "POST",
-        body: formDataToSend,
-      })
-
-      if (response.ok) {
-        setIsOpen(false)
-        setFormData({
-          authorName: "",
-          authorCompany: "",
-          authorImage: null,
-          content: "",
-        })
-        fetchTestimonials()
+      if (selectedTestimonial) {
+        await adminApi.testimonials.update(Number(selectedTestimonial.id), formDataToSend)
+      } else {
+        await adminApi.testimonials.create(formDataToSend)
       }
+
+      setIsOpen(false)
+      setSelectedTestimonial(null)
+      setFormData({
+        authorName: "",
+        authorCompany: "",
+        authorImage: null,
+        content: "",
+      })
+      fetchTestimonials()
     } catch (error) {
-      console.error("Failed to create testimonial:", error)
+      console.error("Failed to save testimonial:", error)
+    }
+  }
+
+  async function handleDelete(testimonial: Testimonial) {
+    try {
+      await adminApi.testimonials.delete(Number(testimonial.id))
+      setIsDeleteDialogOpen(false)
+      setSelectedTestimonial(null)
+      fetchTestimonials()
+    } catch (error) {
+      console.error("Failed to delete testimonial:", error)
     }
   }
 
@@ -86,65 +111,14 @@ export default function TestimonialsPage() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Testimonials</h1>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Testimonial
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Testimonial</DialogTitle>
-              <DialogDescription>Create a new testimonial by filling out the form below.</DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="authorName">Author Name</Label>
-                <Input
-                  id="authorName"
-                  value={formData.authorName}
-                  onChange={(e) => setFormData({ ...formData, authorName: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="authorCompany">Author Company</Label>
-                <Input
-                  id="authorCompany"
-                  value={formData.authorCompany}
-                  onChange={(e) => setFormData({ ...formData, authorCompany: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="authorImage">Author Image</Label>
-                <Input
-                  id="authorImage"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      authorImage: e.target.files?.[0] || null,
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <Label htmlFor="content">Content</Label>
-                <Textarea
-                  id="content"
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full">
-                Create Testimonial
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <Button
+          onClick={() => {
+            setSelectedTestimonial(null)
+            setIsOpen(true)
+          }}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Testimonial
+        </Button>
       </div>
 
       <Table>
@@ -154,6 +128,7 @@ export default function TestimonialsPage() {
             <TableHead>Company</TableHead>
             <TableHead>Content</TableHead>
             <TableHead>Image</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -173,10 +148,107 @@ export default function TestimonialsPage() {
                   "No image"
                 )}
               </TableCell>
+              <TableCell>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      setSelectedTestimonial(testimonial)
+                      setIsOpen(true)
+                    }}>
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      setSelectedTestimonial(testimonial)
+                      setIsDeleteDialogOpen(true)
+                    }}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selectedTestimonial ? "Edit Testimonial" : "Add New Testimonial"}</DialogTitle>
+            <DialogDescription>
+              {selectedTestimonial
+                ? "Edit the testimonial details below."
+                : "Create a new testimonial by filling out the form below."}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="authorName">Author Name</Label>
+              <Input
+                id="authorName"
+                value={formData.authorName}
+                onChange={(e) => setFormData({ ...formData, authorName: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="authorCompany">Author Company</Label>
+              <Input
+                id="authorCompany"
+                value={formData.authorCompany}
+                onChange={(e) => setFormData({ ...formData, authorCompany: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label htmlFor="authorImage">Author Image</Label>
+              <Input
+                id="authorImage"
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    authorImage: e.target.files?.[0] || null,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="content">Content</Label>
+              <Textarea
+                id="content"
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full">
+              {selectedTestimonial ? "Save Changes" : "Create Testimonial"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the testimonial.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => selectedTestimonial && handleDelete(selectedTestimonial)}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
