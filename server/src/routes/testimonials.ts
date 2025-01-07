@@ -74,16 +74,23 @@ router.put("/:id", authenticateToken, upload.single("authorImage"), async (req, 
   try {
     const { id } = req.params
     const { authorName, authorCompany, content } = req.body
-    uploadedImagePath = req.file ? `/uploads/${req.file.filename}` : undefined
 
     // Get the current testimonial to get the old image path
     const [currentTestimonial] = await db.select().from(testimonials).where(eq(testimonials.id, parseInt(id)))
+    if (!currentTestimonial) {
+      return res.status(404).json({ error: "Testimonial not found" })
+    }
+
+    // Only set new image path if a file was uploaded
+    uploadedImagePath = req.file ? `/uploads/${req.file.filename}` : undefined
 
     const updateData: any = {
       authorName,
       authorCompany,
       content,
     }
+
+    // Only update image if a new one was uploaded
     if (uploadedImagePath) {
       updateData.authorImage = uploadedImagePath
     }
@@ -126,15 +133,19 @@ router.delete("/:id", authenticateToken, async (req, res) => {
   try {
     const { id } = req.params
 
-    // Get the testimonial to get the image path
-    const [testimonial] = await db.select().from(testimonials).where(eq(testimonials.id, parseInt(id)))
+    // Get the testimonial and delete it in a single query
+    const [deletedTestimonial] = await db
+      .delete(testimonials)
+      .where(eq(testimonials.id, parseInt(id)))
+      .returning()
 
-    // Delete the testimonial
-    await db.delete(testimonials).where(eq(testimonials.id, parseInt(id)))
+    if (!deletedTestimonial) {
+      return res.status(404).json({ error: "Testimonial not found" })
+    }
 
     // Delete the image file if it exists
-    if (testimonial?.authorImage) {
-      await deleteImageFile(testimonial.authorImage)
+    if (deletedTestimonial.authorImage) {
+      await deleteImageFile(deletedTestimonial.authorImage)
     }
 
     res.status(204).end()

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,22 +15,46 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { MultiCombobox } from "@/components/ui/multi-combobox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { createProject, deleteProject, getProjects, updateProject } from "@/lib/actions"
-import type { Project } from "@/lib/actions"
-import { Edit, Plus, Trash2 } from "lucide-react"
+import { createCategory, createProject, deleteProject, getCategories, getProjects, updateProject } from "@/lib/actions"
+import type { Category, Project } from "@/lib/actions"
+import { cn } from "@/lib/utils"
+import { Edit, Plus, Trash2, X } from "lucide-react"
 import { toast } from "sonner"
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [keepExistingImage, setKeepExistingImage] = useState(true)
 
   useEffect(() => {
     fetchProjects()
+    fetchCategories()
   }, [])
+
+  useEffect(() => {
+    if (selectedProject) {
+      setSelectedCategories(selectedProject.categories || [])
+    } else {
+      setSelectedCategories([])
+    }
+  }, [selectedProject])
+
+  async function fetchCategories() {
+    const result = await getCategories()
+    if ("error" in result) {
+      toast.error(result.error)
+      return
+    }
+    setCategories(result.data)
+  }
 
   async function fetchProjects() {
     toast.promise(
@@ -51,11 +75,14 @@ export default function ProjectsPage() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setIsLoading(true)
 
     const formData = new FormData(e.currentTarget)
     const imageFile = formData.get("image") as File
 
-    if (imageFile && imageFile.size > 0) {
+    if (keepExistingImage && selectedProject?.image) {
+      formData.delete("image")
+    } else if (imageFile && imageFile.size > 0) {
       if (imageFile.size > 1024 * 1024) {
         toast.error("Image size must be less than 1MB")
         return
@@ -68,10 +95,29 @@ export default function ProjectsPage() {
       }
     }
 
-    setIsLoading(true)
+    // Add categories to form data
+    formData.delete("categories")
+    for (const category of selectedCategories) {
+      formData.append("categories", category)
+    }
 
     try {
-      const result = selectedProject ? await updateProject(selectedProject.id, formData) : await createProject(formData)
+      // Create any new categories first
+      const newCategories = selectedCategories.filter((category) => !categories.find((c) => c.title === category))
+
+      await Promise.all(
+        newCategories.map(async (title) => {
+          const result = await createCategory({ title })
+          if ("error" in result) {
+            throw new Error(`Failed to create category: ${result.error}`)
+          }
+        })
+      )
+
+      // Then create/update the project
+      const result = selectedProject
+        ? await updateProject(Number(selectedProject.id), formData)
+        : await createProject(formData)
 
       if ("error" in result) {
         toast.error(result.error)
@@ -80,8 +126,10 @@ export default function ProjectsPage() {
 
       setIsOpen(false)
       setSelectedProject(null)
+      setSelectedCategories([])
       toast.success(selectedProject ? "Project updated" : "Project created")
       fetchProjects()
+      fetchCategories()
     } catch (error) {
       toast.error("Failed to save project")
     } finally {
@@ -92,7 +140,7 @@ export default function ProjectsPage() {
   async function handleDelete(project: Project) {
     setIsLoading(true)
     try {
-      const result = await deleteProject(project.id)
+      const result = await deleteProject(Number(project.id))
       if ("error" in result) {
         toast.error(result.error)
         return
@@ -108,6 +156,12 @@ export default function ProjectsPage() {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (isOpen) {
+      setKeepExistingImage(!!selectedProject?.image)
+    }
+  }, [isOpen, selectedProject])
 
   return (
     <div>
@@ -127,7 +181,7 @@ export default function ProjectsPage() {
         <TableHeader>
           <TableRow>
             <TableHead>Title</TableHead>
-            <TableHead>Slug</TableHead>
+            <TableHead>Categories</TableHead>
             <TableHead>Latest</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -136,7 +190,7 @@ export default function ProjectsPage() {
           {projects.map((project) => (
             <TableRow key={project.id}>
               <TableCell>{project.title}</TableCell>
-              <TableCell>{project.slug}</TableCell>
+              <TableCell>{project.categories?.join(", ") || "-"}</TableCell>
               <TableCell>{project.isLatest ? "Yes" : "No"}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
@@ -181,11 +235,80 @@ export default function ProjectsPage() {
               <Input id="title" name="title" defaultValue={selectedProject?.title} required />
             </div>
             <div>
+              <Label htmlFor="categories">Categories</Label>
+              <MultiCombobox
+                items={categories.map((category) => ({
+                  value: category.title,
+                  label: category.title,
+                }))}
+                selectedValues={selectedCategories}
+                onSelect={setSelectedCategories}
+                placeholder="Select or create categories..."
+                emptyText="No categories found."
+              />
+            </div>
+            <div>
               <Label htmlFor="image">Image</Label>
-              <Input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp" />
-              <p className="mt-1 text-sm text-muted-foreground">
-                Maximum file size: 1MB. Allowed formats: JPEG, PNG, WebP
-              </p>
+              <div className="space-y-4">
+                {selectedProject?.image && (
+                  <div className="flex items-center gap-4">
+                    <div className="relative h-20 w-20 shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={process.env.NEXT_PUBLIC_API_URL + selectedProject.image}
+                        alt="Current project image"
+                        className="h-full w-full rounded-md object-cover"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">Current image: {selectedProject.image.split("/").pop()}</p>
+                      <div className="mt-2 flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="keepImage"
+                          checked={keepExistingImage}
+                          onChange={(e) => {
+                            setKeepExistingImage(e.target.checked)
+                            if (e.target.checked && fileInputRef.current) {
+                              fileInputRef.current.value = ""
+                            }
+                          }}
+                        />
+                        <Label htmlFor="keepImage" className="text-sm">
+                          Keep existing image
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className={cn("space-y-2", keepExistingImage && selectedProject?.image && "opacity-50")}>
+                  <Input
+                    id="image"
+                    name="image"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    ref={fileInputRef}
+                    disabled={keepExistingImage && !!selectedProject?.image}
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) {
+                        if (e.target.files[0].size > 1024 * 1024) {
+                          toast.error("Image size must be less than 1MB")
+                          e.target.value = ""
+                          return
+                        }
+                        if (!["image/jpeg", "image/png", "image/webp"].includes(e.target.files[0].type)) {
+                          toast.error("Only JPEG, PNG and WebP images are allowed")
+                          e.target.value = ""
+                          return
+                        }
+                      }
+                    }}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Maximum file size: 1MB. Allowed formats: JPEG, PNG, WebP
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="flex items-center space-x-2">
               <input type="checkbox" id="isLatest" name="isLatest" defaultChecked={selectedProject?.isLatest} />

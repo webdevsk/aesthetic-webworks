@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { db } from "../db"
-import { projects, projectCategories } from "../db/schema"
-import { eq } from "drizzle-orm"
+import { projects, projectCategories, categories } from "../db/schema"
+import { eq, inArray } from "drizzle-orm"
 import { upload, deleteImageFile } from "../utils/upload"
 import { authenticateToken } from "../middleware/auth"
 
@@ -11,22 +11,33 @@ const router = Router()
 router.get("/", async (_req, res) => {
   try {
     const projectsList = await db.select().from(projects)
-    const result = await Promise.all(
-      projectsList.map(async (project) => {
-        const projectCategoriesResult = await db
-          .select({
-            categoryTitle: projects.title,
-          })
-          .from(projects)
-          .innerJoin(projectCategories, eq(projects.id, projectCategories.projectId))
-          .where(eq(projectCategories.projectId, project.id))
+    const projectIds = projectsList.map((p) => p.id)
 
-        return {
-          ...project,
-          categories: projectCategoriesResult.map((pc) => pc.categoryTitle),
-        }
+    // Fetch all categories for all projects in a single query
+    const allProjectCategories = await db
+      .select({
+        projectId: projectCategories.projectId,
+        categoryTitle: categories.title,
       })
-    )
+      .from(projectCategories)
+      .innerJoin(categories, eq(categories.id, projectCategories.categoryId))
+      .where(inArray(projectCategories.projectId, projectIds))
+
+    // Group categories by project
+    const categoriesByProject = allProjectCategories.reduce((acc, pc) => {
+      if (!acc[pc.projectId]) {
+        acc[pc.projectId] = []
+      }
+      acc[pc.projectId].push(pc.categoryTitle)
+      return acc
+    }, {} as Record<number, string[]>)
+
+    // Map projects with their categories
+    const result = projectsList.map((project) => ({
+      ...project,
+      categories: categoriesByProject[project.id] || [],
+    }))
+
     res.json(result)
   } catch (error) {
     console.error(error)
@@ -54,24 +65,40 @@ router.post("/", authenticateToken, upload.single("image"), async (req, res) => 
       .returning()
 
     if (categoryTitles) {
-      const categoryIds = await Promise.all(
-        categoryTitles.split(",").map(async (categoryTitle: string) => {
-          const [category] = await db.select().from(projects).where(eq(projects.title, categoryTitle.trim()))
-          return category?.id
-        })
-      )
+      const categoryTitlesArray = Array.isArray(categoryTitles) ? categoryTitles : [categoryTitles]
 
-      await Promise.all(
-        categoryIds.filter(Boolean).map((categoryId) =>
-          db.insert(projectCategories).values({
+      // Get all categories in a single query
+      const existingCategories = await db
+        .select()
+        .from(categories)
+        .where(inArray(categories.title, categoryTitlesArray.map((t) => t.trim())))
+
+      // Create project-category relationships
+      if (existingCategories.length > 0) {
+        await db.insert(projectCategories).values(
+          existingCategories.map((category) => ({
             projectId: project.id,
-            categoryId: categoryId!,
-          })
+            categoryId: category.id,
+          }))
         )
-      )
+      }
+
+      // Return project with categories
+      const projectCategoriesResult = await db
+        .select({
+          categoryTitle: categories.title,
+        })
+        .from(projectCategories)
+        .innerJoin(categories, eq(categories.id, projectCategories.categoryId))
+        .where(eq(projectCategories.projectId, project.id))
+
+      return res.status(201).json({
+        ...project,
+        categories: projectCategoriesResult.map((pc) => pc.categoryTitle),
+      })
     }
 
-    res.status(201).json(project)
+    res.status(201).json({ ...project, categories: [] })
   } catch (error) {
     // Delete uploaded image if there's an error
     if (uploadedImagePath) {
@@ -90,16 +117,23 @@ router.put("/:id", authenticateToken, upload.single("image"), async (req, res) =
     const { id } = req.params
     const { title, categories: categoryTitles, isLatest } = req.body
     const slug = title.toLowerCase().replace(/\s+/g, "-")
-    uploadedImagePath = req.file ? `/uploads/${req.file.filename}` : undefined
 
     // Get the current project to get the old image path
     const [currentProject] = await db.select().from(projects).where(eq(projects.id, parseInt(id)))
+    if (!currentProject) {
+      return res.status(404).json({ error: "Project not found" })
+    }
+
+    // Only set new image path if a file was uploaded
+    uploadedImagePath = req.file ? `/uploads/${req.file.filename}` : undefined
 
     const updateData: any = {
       title,
       slug,
       isLatest: isLatest === "true",
     }
+
+    // Only update image if a new one was uploaded
     if (uploadedImagePath) {
       updateData.image = uploadedImagePath
     }
@@ -119,25 +153,40 @@ router.put("/:id", authenticateToken, upload.single("image"), async (req, res) =
       // Remove existing categories
       await db.delete(projectCategories).where(eq(projectCategories.projectId, parseInt(id)))
 
-      // Add new categories
-      const categoryIds = await Promise.all(
-        categoryTitles.split(",").map(async (categoryTitle: string) => {
-          const [category] = await db.select().from(projects).where(eq(projects.title, categoryTitle.trim()))
-          return category?.id
-        })
-      )
+      const categoryTitlesArray = Array.isArray(categoryTitles) ? categoryTitles : [categoryTitles]
 
-      await Promise.all(
-        categoryIds.filter(Boolean).map((categoryId) =>
-          db.insert(projectCategories).values({
+      // Get all categories in a single query
+      const existingCategories = await db
+        .select()
+        .from(categories)
+        .where(inArray(categories.title, categoryTitlesArray.map((t) => t.trim())))
+
+      // Create project-category relationships
+      if (existingCategories.length > 0) {
+        await db.insert(projectCategories).values(
+          existingCategories.map((category) => ({
             projectId: project.id,
-            categoryId: categoryId!,
-          })
+            categoryId: category.id,
+          }))
         )
-      )
+      }
+
+      // Return project with categories
+      const projectCategoriesResult = await db
+        .select({
+          categoryTitle: categories.title,
+        })
+        .from(projectCategories)
+        .innerJoin(categories, eq(categories.id, projectCategories.categoryId))
+        .where(eq(projectCategories.projectId, project.id))
+
+      return res.json({
+        ...project,
+        categories: projectCategoriesResult.map((pc) => pc.categoryTitle),
+      })
     }
 
-    res.json(project)
+    res.json({ ...project, categories: [] })
   } catch (error) {
     // Delete newly uploaded image if there's an error
     if (uploadedImagePath) {

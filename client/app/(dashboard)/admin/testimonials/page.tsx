@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,7 +19,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { createTestimonial, deleteTestimonial, getTestimonials, updateTestimonial } from "@/lib/actions"
 import type { Testimonial } from "@/lib/actions"
+import { cn } from "@/lib/utils"
 import { Edit, Plus, Trash2 } from "lucide-react"
+import { X } from "lucide-react"
 import { toast } from "sonner"
 
 export default function TestimonialsPage() {
@@ -28,6 +30,8 @@ export default function TestimonialsPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [keepExistingImage, setKeepExistingImage] = useState(true)
 
   useEffect(() => {
     fetchTestimonials()
@@ -56,7 +60,9 @@ export default function TestimonialsPage() {
     const formData = new FormData(e.currentTarget)
     const imageFile = formData.get("authorImage") as File
 
-    if (imageFile && imageFile.size > 0) {
+    if (keepExistingImage && selectedTestimonial?.author.image) {
+      formData.delete("authorImage")
+    } else if (imageFile && imageFile.size > 0) {
       if (imageFile.size > 1024 * 1024) {
         toast.error("Image size must be less than 1MB")
         return
@@ -111,6 +117,12 @@ export default function TestimonialsPage() {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (isOpen) {
+      setKeepExistingImage(!!selectedTestimonial?.author.image)
+    }
+  }, [isOpen, selectedTestimonial])
 
   return (
     <div>
@@ -189,10 +201,69 @@ export default function TestimonialsPage() {
             </div>
             <div>
               <Label htmlFor="authorImage">Author Image</Label>
-              <Input id="authorImage" name="authorImage" type="file" accept="image/jpeg,image/png,image/webp" />
-              <p className="mt-1 text-sm text-muted-foreground">
-                Maximum file size: 1MB. Allowed formats: JPEG, PNG, WebP
-              </p>
+              <div className="space-y-4">
+                {selectedTestimonial?.author.image && (
+                  <div className="flex items-center gap-4">
+                    <div className="relative h-20 w-20 shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={process.env.NEXT_PUBLIC_API_URL + selectedTestimonial.author.image}
+                        alt="Current author image"
+                        className="h-full w-full rounded-md object-cover"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">
+                        Current image: {selectedTestimonial.author.image.split("/").pop()}
+                      </p>
+                      <div className="mt-2 flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="keepImage"
+                          checked={keepExistingImage}
+                          onChange={(e) => {
+                            setKeepExistingImage(e.target.checked)
+                            if (e.target.checked && fileInputRef.current) {
+                              fileInputRef.current.value = ""
+                            }
+                          }}
+                        />
+                        <Label htmlFor="keepImage" className="text-sm">
+                          Keep existing image
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div
+                  className={cn("space-y-2", keepExistingImage && selectedTestimonial?.author.image && "opacity-50")}>
+                  <Input
+                    id="authorImage"
+                    name="authorImage"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    ref={fileInputRef}
+                    disabled={keepExistingImage && !!selectedTestimonial?.author.image}
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) {
+                        if (e.target.files[0].size > 1024 * 1024) {
+                          toast.error("Image size must be less than 1MB")
+                          e.target.value = ""
+                          return
+                        }
+                        if (!["image/jpeg", "image/png", "image/webp"].includes(e.target.files[0].type)) {
+                          toast.error("Only JPEG, PNG and WebP images are allowed")
+                          e.target.value = ""
+                          return
+                        }
+                      }
+                    }}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Maximum file size: 1MB. Allowed formats: JPEG, PNG, WebP
+                  </p>
+                </div>
+              </div>
             </div>
             <div>
               <Label htmlFor="content">Content</Label>
