@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Button } from "./ui/button"
+import { AnimatedButton as Button } from "./ui/animated-button"
 import { Card } from "./ui/card"
 import { Facebook, Instagram, Twitter } from "lucide-react"
 

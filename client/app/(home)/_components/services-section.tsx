@@ -1,6 +1,6 @@
 import Link from "next/link"
+import { AnimatedButton as Button } from "@/components/ui/animated-button"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
 export function ServicesSection() {
@@ -25,15 +25,17 @@ export function ServicesSection() {
             ))}
           </div>
         </div>
-          <Card className="bg-primary text-primary-foreground p-16">
-            <h3 className="variant-h3">
-              Let's start with a conversation about how we can help you! Get in touch, we're a nice bunch.
-            </h3>
-            <div className="mt-8 flex items-center gap-4">
-              <Button variant="ghost">Let's talk</Button>
-              <Badge size="lg" variant="outline" className="border-current">999999999</Badge>
-            </div>
-          </Card>
+        <Card className="bg-primary p-16 text-primary-foreground">
+          <h3 className="variant-h3">
+            Let's start with a conversation about how we can help you! Get in touch, we're a nice bunch.
+          </h3>
+          <div className="mt-8 flex items-center gap-4">
+            <Button variant="ghost">Let's talk</Button>
+            <Badge size="lg" variant="outline" className="border-current">
+              999999999
+            </Badge>
+          </div>
+        </Card>
       </div>
     </section>
   )

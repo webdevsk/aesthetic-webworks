@@ -2,13 +2,13 @@
 
 import { useRef } from "react"
 import Image from "next/image"
-import { HorizontalScrollTrigger } from "@/components/horizontal-scroll-trigger"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { motion, useInView } from "motion/react"
 import Link from "next/link"
+import { HorizontalScrollTrigger } from "@/components/horizontal-scroll-trigger"
+import { AnimatedButton as Button } from "@/components/ui/animated-button"
+import { Badge } from "@/components/ui/badge"
+import { Card } from "@/components/ui/card"
 import { projects } from "@/data/data"
+import { motion, useInView } from "motion/react"
 
 export const OurWorksSection = () => {
   const ref = useRef(null)
@@ -26,14 +26,16 @@ export const OurWorksSection = () => {
               initial={{ opacity: 0, x: 100 }}
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}>
-              <Card className="relative aspect-[1.25] min-w-[43.125vw] overflow-hidden bg-transparent text-primary-foreground ring-0 ring-primary hover:ring-4 transition-shadow duration-300">
-                {!!project.image && <Image
-                  src={project.image}
-                  alt={project.title}
-                  fill
-                  className="inset-0 -z-10 object-cover"
-                  priority={index === 0}
-                />}
+              <Card className="relative aspect-[1.25] min-w-[43.125vw] overflow-hidden bg-transparent text-primary-foreground ring-0 ring-primary transition-shadow duration-300 hover:ring-4">
+                {!!project.image && (
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    className="inset-0 -z-10 object-cover"
+                    priority={index === 0}
+                  />
+                )}
                 <div className="flex size-full flex-col gap-4">
                   <div className="self-end">{project.isLatest && <Badge>Latest</Badge>}</div>
                   <h2 className="variant-h2 mt-auto">{project.title}</h2>
@@ -68,21 +70,21 @@ const Heading = () => {
         A selection of our crafted work, built from scratch by our talented in-house team.
       </h4>
       <div className="mt-auto">
-      <Link href="#">
-            <Button variant="outline">Case Studies</Button>
-            </Link>
+        <Link href="#">
+          <Button variant="outline">Case Studies</Button>
+        </Link>
       </div>
     </div>
   )
 }
 
 const Ending = () => {
-    return (
-        <div className="flex flex-col min-w-[32.5625vw] aspect-[1.25] items-center gap-5 justify-center">
-            <h2 className="variant-h2">View More</h2>
-            <Link href="#">
-            <Button variant="outline">Case Studies</Button>
-            </Link>
-        </div>
-    )
+  return (
+    <div className="flex aspect-[1.25] min-w-[32.5625vw] flex-col items-center justify-center gap-5">
+      <h2 className="variant-h2">View More</h2>
+      <Link href="#">
+        <Button variant="outline">Case Studies</Button>
+      </Link>
+    </div>
+  )
 }

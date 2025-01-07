@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { AnimatedButton as Button } from "@/components/ui/animated-button"
 import { AchievementsBadge } from "./achievements-badge"
 
 export const HeroSection = () => {
