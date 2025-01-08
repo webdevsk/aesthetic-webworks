@@ -1,10 +1,9 @@
 "use client"
 
-import Link from "next/link"
 import { cn } from "@/lib/utils"
 import useDetectScroll from "@smakss/react-scroll-direction"
 import { DialogContent, DialogRoot, DialogTrigger } from "./dialog-menu"
-import { AnimatedButton } from "./ui/animated-button"
+import { AnimatedLink } from "./ui/animated-button"
 import { BurgerMenuBtn } from "./ui/burger-menu-btn"
 
 export function Header() {
@@ -16,9 +15,12 @@ export function Header() {
         style={{ ["--translate" as string]: translate }}
         className="container fixed top-0 z-40 flex h-[100px] translate-y-[calc(var(--translate)_*_-100%)] items-center gap-8 transition-transform duration-700">
         <Logo className="max-w-16" />
-        <AnimatedButton variant="outline" className="ms-auto flex h-10 items-center px-6 py-0 text-base font-medium">
-          <Link href="/admin">Admin Panel</Link>
-        </AnimatedButton>
+        <AnimatedLink
+          variant="outline"
+          href="/admin"
+          className="ms-auto flex h-10 items-center px-6 py-0 text-base font-medium">
+          Admin Panel
+        </AnimatedLink>
         <DialogRoot>
           <DialogTrigger asChild>
             <BurgerMenuBtn />

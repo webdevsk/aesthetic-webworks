@@ -4,9 +4,9 @@ import * as React from "react"
 import type { ForwardedRef } from "react"
 import { createContext, forwardRef, useContext, useState } from "react"
 import Link from "next/link"
+import { AnimatedLink } from "@/components/ui/animated-button"
 import { cn } from "@/lib/utils"
 import * as RadixDialog from "@radix-ui/react-dialog"
-import { AnimatedButton } from "./ui/animated-button"
 import { X } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 
@@ -101,12 +101,12 @@ function DialogContentCore(
                       {/* Nav menu */}
                       <div className="my-[calc(16px_+_24*(100vw_-_576px)/1024)] space-y-4">
                         {["Case Studies", "Our Agency", "Contact Us", "News"].map((menu) => (
-                          <div className="flex items-center gap-4">
-                            <AnimatedButton className="rounded-none border-0 bg-transparent p-0 text-[calc(32px_+_24*(100vw_-_576px)/1024)] font-semibold outline-none ring-0 hover:bg-transparent hover:ring-0">
-                              <Link key={menu} href={`#}`}>
-                                {menu}
-                              </Link>
-                            </AnimatedButton>
+                          <div key={menu} className="flex items-center gap-4">
+                            <AnimatedLink
+                              href={`#`}
+                              className="rounded-none border-0 bg-transparent p-0 text-[calc(32px_+_24*(100vw_-_576px)/1024)] font-semibold outline-none ring-0 hover:bg-transparent hover:ring-0">
+                              {menu}
+                            </AnimatedLink>
 
                             {menu === "Case Studies" && (
                               <div className="font-regular variant-h5 grid size-[72px] place-items-center rounded-full border border-muted">
@@ -134,9 +134,7 @@ function DialogContentCore(
                             </Link>
                           ))}
                         </div>
-                        <AnimatedButton className="">
-                          <Link href="/admin">Admin Panel</Link>
-                        </AnimatedButton>
+                        <AnimatedLink href="/admin">Admin Panel</AnimatedLink>
                       </div>
                     </div>
                   </div>

@@ -2,9 +2,8 @@
 
 import { useRef } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import { HorizontalScrollTrigger } from "@/components/horizontal-scroll-trigger"
-import { AnimatedButton as Button } from "@/components/ui/animated-button"
+import { AnimatedLink } from "@/components/ui/animated-button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { projects } from "@/data/data"
@@ -70,9 +69,9 @@ const Heading = () => {
         A selection of our crafted work, built from scratch by our talented in-house team.
       </h4>
       <div className="mt-auto">
-        <Link href="#">
-          <Button variant="outline">Case Studies</Button>
-        </Link>
+        <AnimatedLink href="#" variant="outline">
+          Case Studies
+        </AnimatedLink>
       </div>
     </div>
   )
@@ -82,9 +81,9 @@ const Ending = () => {
   return (
     <div className="flex aspect-[1.25] min-w-[32.5625vw] flex-col items-center justify-center gap-5">
       <h2 className="variant-h2">View More</h2>
-      <Link href="#">
-        <Button variant="outline">Case Studies</Button>
-      </Link>
+      <AnimatedLink href="#" variant="outline">
+        Case Studies
+      </AnimatedLink>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 // import { Slot } from "@radix-ui/react-slot"
 import { type VariantProps, cva } from "class-variance-authority"
@@ -32,21 +33,8 @@ const buttonVariants = cva(
   }
 )
 
-export interface ButtonProps
-  // React.ButtonHTMLAttributes<HTMLButtonElement>,
-  extends HTMLMotionProps<"button">,
-    React.RefAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  // asChild?: boolean
-}
+export type ButtonProps = HTMLMotionProps<"button"> & VariantProps<typeof buttonVariants>
 
-// Default Button
-// const Button = ({ className, variant, size, asChild = false, ref, ...props }: ButtonProps) => {
-//     const Comp = asChild ? Slot : "button"
-//     return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
-//   }
-
-// Animated Button
 const AnimatedButton = ({ className, variant, size, ref, children, ...props }: ButtonProps) => {
   const [scope, animate] = useAnimate()
   return (
@@ -73,6 +61,37 @@ const AnimatedButton = ({ className, variant, size, ref, children, ...props }: B
   )
 }
 
-AnimatedButton.displayName = "Button"
+AnimatedButton.displayName = "AnimatedButton"
 
-export { AnimatedButton, buttonVariants }
+const MotionLink = motion.create(Link)
+export type LinkProps = React.ComponentProps<typeof MotionLink> & VariantProps<typeof buttonVariants>
+
+const AnimatedLink = ({ className, variant, size, ref, children, ...props }: LinkProps) => {
+  const [scope, animate] = useAnimate()
+  return (
+    <MotionLink
+      onHoverStart={() => {
+        animate(
+          scope.current,
+          {
+            y: [0, -72, 72, 0],
+            scaleY: [1, 1.2, 1.2, 1],
+          },
+          {
+            duration: 0.5,
+            times: [0, 0.5, 0.5, 1],
+            ease: ["easeIn", "linear", "linear", "easeOut"],
+          }
+        )
+      }}
+      className={cn(buttonVariants({ variant, size, className }), "overflow-y-hidden")}
+      ref={ref}
+      {...props}>
+      <motion.span ref={scope}>{children}</motion.span>
+    </MotionLink>
+  )
+}
+
+AnimatedLink.displayName = "AnimatedLink"
+
+export { AnimatedButton, AnimatedLink, buttonVariants }

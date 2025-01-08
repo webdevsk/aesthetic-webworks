@@ -1,5 +1,4 @@
-import Link from "next/link"
-import { AnimatedButton as Button } from "@/components/ui/animated-button"
+import { AnimatedLink } from "@/components/ui/animated-button"
 import { AchievementsBadge } from "./achievements-badge"
 
 export const HeroSection = () => {
@@ -18,9 +17,7 @@ export const HeroSection = () => {
           <p className="ms-auto max-w-lg text-[28.8px] leading-tight">
             We build engaging websites, brands & innovative e-commerce solutions.
           </p>
-          <Link href="/case-studies">
-            <Button>Case Studies</Button>
-          </Link>
+          <AnimatedLink href="#">Case Studies</AnimatedLink>
         </div>
       </div>
     </section>
