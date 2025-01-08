@@ -35,7 +35,7 @@ export function Header() {
   )
 }
 
-function Logo({ className, ...props }: { className?: string } & React.SVGProps<SVGSVGElement>) {
+export function Logo({ className, ...props }: { className?: string } & React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       id="logo"

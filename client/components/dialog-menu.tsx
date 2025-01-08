@@ -10,7 +10,6 @@ import { AnimatedButton } from "./ui/animated-button"
 import { X } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 
-const DialogOverlay = motion(RadixDialog.Overlay)
 const DialogOpenContext = createContext<boolean>(false)
 
 export function DialogRoot({ children, ...props }: RadixDialog.DialogProps) {
