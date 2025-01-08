@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { TextSlideUpByLine, TextSlideUpByWord } from "@/components/higher-order-text-animate-components"
 import { Badge } from "@/components/ui/badge"
 import { categories } from "@/data/data"
 import { AnimatePresence, motion } from "motion/react"
@@ -9,7 +10,9 @@ export function WhatWeDoSection() {
   return (
     <section className="bg-[#111111] bg-radialToBr text-primary-foreground">
       <div className="container py-[7.5vw]">
-        <h5 className="variant-h5 mb-4">Our team of experts can help you with...</h5>
+        <TextSlideUpByWord as="h5" className="variant-h5 mb-4 overflow-y-hidden">
+          Our team of experts can help you with...
+        </TextSlideUpByWord>
         <div className="space-y-4">
           {categories.map((category) =>
             !category.topProject ? null : (
@@ -25,7 +28,7 @@ export function WhatWeDoSection() {
                     hovered: { scale: 0.95, transition: { duration: 0.3 } },
                   }}
                   className="variant-h2 origin-left">
-                  {category.title}
+                  <TextSlideUpByLine>{category.title}</TextSlideUpByLine>
                 </motion.h2>
                 <motion.div
                   variants={{
@@ -76,9 +79,11 @@ export function WhatWeDoSection() {
         <div className="my-[4rem] h-[1px] w-full bg-[#fff3]"></div>
         <div className="flex items-end justify-between">
           <div className="max-w-xl">
-            <h2 className="variant-h2 mb-8 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <TextSlideUpByLine
+              as="h2"
+              className="variant-h2 mb-8 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Creative Agency
-            </h2>
+            </TextSlideUpByLine>
             <h5 className="variant-h5">
               We’re an award-winning creative agency based in London, focused on E-Commerce, Web Design London, Digital
               Products, Branding and SEO.
