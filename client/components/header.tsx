@@ -1,21 +1,38 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { DialogContent, DialogRoot, DialogTrigger } from "./dialog-menu"
 import { AnimatedButton } from "./ui/animated-button"
 import { BurgerMenuBtn } from "./ui/burger-menu-btn"
-import Link from "next/link"
 
 export function Header() {
+  const [open, setOpen] = useState(false)
   return (
-    <header className="container flex items-center gap-8 h-[100px]">
-      <Logo className="max-w-16"/>
-      <AnimatedButton variant="outline" className="text-base ms-auto font-medium px-6 h-10 flex items-center py-0"><Link href="/admin">Admin Panel</Link></AnimatedButton>
-      <BurgerMenuBtn />
+    <header className="container fixed top-0 z-40 flex h-[100px] items-center gap-8">
+      <Logo className="max-w-16" />
+      <AnimatedButton variant="outline" className="ms-auto flex h-10 items-center px-6 py-0 text-base font-medium">
+        <Link href="/admin">Admin Panel</Link>
+      </AnimatedButton>
+      <DialogRoot>
+        <DialogTrigger asChild>
+          <BurgerMenuBtn />
+        </DialogTrigger>
+        <DialogContent title="Main Menu">Hello</DialogContent>
+      </DialogRoot>
     </header>
   )
 }
 
 function Logo({ className, ...props }: { className?: string } & React.SVGProps<SVGSVGElement>) {
   return (
-    <svg id="logo" className={cn("w-full h-auto", className)} {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64.06 32">
+    <svg
+      id="logo"
+      className={cn("h-auto w-full", className)}
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 64.06 32">
       <rect
         id="line1"
         x="12.31"
