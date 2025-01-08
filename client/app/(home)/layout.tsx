@@ -1,9 +1,16 @@
 import { Footer } from "@/components/footer"
+import { Header } from "@/components/header"
 
 export default function HomeLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
-  return <>{children} <Footer /></>
+  return (
+    <>
+      <Header />
+      {children}
+      <Footer />
+    </>
+  )
 }

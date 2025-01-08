@@ -1,13 +1,13 @@
 "use client"
 
 import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
 import { categories } from "@/data/data"
 import { AnimatePresence, motion } from "motion/react"
-import { Badge } from "@/components/ui/badge"
 
 export function WhatWeDoSection() {
   return (
-    <section className="bg-[#111111] text-primary-foreground bg-radialToBr">
+    <section className="bg-[#111111] bg-radialToBr text-primary-foreground">
       <div className="container py-[7.5vw]">
         <h5 className="variant-h5 mb-4">Our team of experts can help you with...</h5>
         <div className="space-y-4">
@@ -20,12 +20,18 @@ export function WhatWeDoSection() {
                 initial="initial"
                 whileHover="hovered">
                 <motion.h2
-                  variants={{ initial: { scale: 1, transition: {duration: 0.3} }, hovered: { scale: 0.95, transition: {duration: 0.3} } }}
+                  variants={{
+                    initial: { scale: 1, transition: { duration: 0.3 } },
+                    hovered: { scale: 0.95, transition: { duration: 0.3 } },
+                  }}
                   className="variant-h2 origin-left">
                   {category.title}
                 </motion.h2>
                 <motion.div
-                  variants={{ initial: { opacity: 0, x: -12, transition: {duration: 0.3} }, hovered: { opacity: 1, x: 0, transition: {duration: 0.3} } }}
+                  variants={{
+                    initial: { opacity: 0, x: -12, transition: { duration: 0.3 } },
+                    hovered: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+                  }}
                   className="flex items-center gap-6">
                   <div>
                     <p className="variant-p text-muted">Latest Case Study</p>
@@ -67,16 +73,25 @@ export function WhatWeDoSection() {
             )
           )}
         </div>
-        <div className="h-[1px] bg-[#fff3] w-full my-[4rem]"></div>
-        <div className="flex justify-between items-end">
-            <div className="max-w-xl">
-                <h2 className="mb-8 variant-h2 bg-gradient-to-r from-primary text-transparent to-accent bg-clip-text">Creative Agency</h2>
-                <h5 className="variant-h5">We’re an award-winning creative agency based in London, focused on E-Commerce, Web Design London, Digital Products, Branding and SEO.</h5>
-            </div>
-            <div className="flex gap-4">
-                <Badge size="lg" variant="outline" className="border-primary">300+ Projects</Badge>
-                <Badge size="lg" variant="outline" className="border-primary">15 Awards</Badge>
-            </div>
+        <div className="my-[4rem] h-[1px] w-full bg-[#fff3]"></div>
+        <div className="flex items-end justify-between">
+          <div className="max-w-xl">
+            <h2 className="variant-h2 mb-8 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Creative Agency
+            </h2>
+            <h5 className="variant-h5">
+              We’re an award-winning creative agency based in London, focused on E-Commerce, Web Design London, Digital
+              Products, Branding and SEO.
+            </h5>
+          </div>
+          <div className="flex gap-4">
+            <Badge size="lg" variant="outline" className="border-primary">
+              300+ Projects
+            </Badge>
+            <Badge size="lg" variant="outline" className="border-primary">
+              15 Awards
+            </Badge>
+          </div>
         </div>
       </div>
     </section>

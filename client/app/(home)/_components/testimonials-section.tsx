@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Testimonial, testimonials } from "@/data/data"
 import { LoaderCircle } from "lucide-react"
-import { motion, MotionValue, useScroll, useTransform } from "motion/react"
+import { MotionValue, motion, useScroll, useTransform } from "motion/react"
 
 export function TestimonialsSection() {
   const target = useRef<HTMLDivElement>(null)
@@ -21,15 +21,15 @@ export function TestimonialsSection() {
       className="relative min-h-screen bg-foreground text-background">
       <div className="container max-w-[84.375vw] py-huge">
         <Heading />
-        <div ref={target} className="mt-8 space-y-12 relative">
+        <div ref={target} className="relative mt-8 space-y-12">
           {testimonials.map((testimonial) => (
             <TestimonialComponent key={testimonial.id} {...testimonial} />
           ))}
         </div>
       </div>
       <div className="pointer-events-none absolute inset-0 z-10">
-        <div className="container relative flex h-full justify-end pt-[30rem] pb-[16rem]">
-          <div className="sticky right-0 h-max top-1/2 -translate-y-1/2">
+        <div className="container relative flex h-full justify-end pb-[16rem] pt-[30rem]">
+          <div className="sticky right-0 top-1/2 h-max -translate-y-1/2">
             <ProgressBar progress={scrollYProgress} />
           </div>
         </div>
@@ -89,10 +89,12 @@ function TestimonialComponent({ id, author: { name, company, image }, content }:
   )
 }
 
-function ProgressBar({ progress }: { progress: MotionValue<number> })   {
+function ProgressBar({ progress }: { progress: MotionValue<number> }) {
   return (
-    <div className="relative w-2 h-[200px] overflow-hidden rounded-full bg-secondary">
-      <motion.div style={{ ["--progress" as string]: progress }} className="h-full w-full flex-1 bg-primary translate-y-[calc((var(--progress)_*_100%)_-_100%)]"></motion.div>
+    <div className="relative h-[200px] w-2 overflow-hidden rounded-full bg-secondary">
+      <motion.div
+        style={{ ["--progress" as string]: progress }}
+        className="h-full w-full flex-1 translate-y-[calc((var(--progress)_*_100%)_-_100%)] bg-primary"></motion.div>
     </div>
   )
 }

@@ -56,6 +56,7 @@ const AnimatedButton = ({ className, variant, size, ref, children, ...props }: B
           scope.current,
           {
             y: [0, -72, 72, 0],
+            scaleY: [1, 1.2, 1.2, 1],
           },
           {
             duration: 0.5,
