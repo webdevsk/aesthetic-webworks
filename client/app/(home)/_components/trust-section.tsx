@@ -36,7 +36,7 @@ export function TrustSection() {
             transition={{ duration: 0.5, delay: 0.3 }}
             variants={{ visible: { scaleY: 1 }, hidden: { scaleY: 0 } }}
             viewport={{ once: true }}
-            className="origin-top">
+            className="origin-top p-0">
             <motion.div
               transition={{ delay: 0.9 }}
               variants={{ visible: { opacity: 1 }, hidden: { opacity: 0 } }}

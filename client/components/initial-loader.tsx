@@ -22,7 +22,7 @@ export function InitialLoader({ children }: { children: React.ReactNode }) {
 
   return (
     <AnimatePresence>
-      {show && (
+      {show ? (
         <motion.div
           key="animator-loader"
           initial={{ translateX: "0%" }}
@@ -42,8 +42,10 @@ export function InitialLoader({ children }: { children: React.ReactNode }) {
             />
           </motion.div>
         </motion.div>
+      ) : (
+        <motion.div key="content">{children}</motion.div>
       )}
-      {!show && <motion.div key="content">{children}</motion.div>}
+      {/* {!show && <motion.div key="content">{children}</motion.div>} */}
     </AnimatePresence>
   )
 }

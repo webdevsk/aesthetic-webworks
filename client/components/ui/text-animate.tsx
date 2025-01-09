@@ -28,8 +28,10 @@ export interface TextAnimateProps extends MotionProps {
   className?: string
   /**
    * The class name to be applied to each segment
+   * @note If you plan to use the function version of segmentClassName,
+   * your parent component must include the "use client" directive
    */
-  segmentClassName?: string
+  segmentClassName?: string | ((segment: string, index: number) => string)
   /**
    * The delay before the animation starts
    */
@@ -50,6 +52,11 @@ export interface TextAnimateProps extends MotionProps {
    * How to split the text ("text", "word", "character")
    */
   by?: AnimationType
+  /**
+   * The stagger children value
+   * If not provided, it will use the default stagger timing for the animation type
+   */
+  staggerChildren?: number
   /**
    * Whether to start animation when component enters viewport
    */
@@ -73,12 +80,13 @@ const staggerTimings: Record<AnimationType, number> = {
 
 const defaultContainerVariants = {
   hidden: { opacity: 1 },
-  show: {
+  show: (delay: number) => ({
     opacity: 1,
     transition: {
-      staggerChildren: 0.05,
+      delay,
+      when: "beforeChildren",
     },
-  },
+  }),
   exit: {
     opacity: 0,
     transition: {
@@ -308,6 +316,7 @@ export function TextAnimate({
   startOnView = true,
   once = false,
   by = "word",
+  staggerChildren = staggerTimings[by],
   animation = "fadeIn",
   ...props
 }: TextAnimateProps) {
@@ -316,22 +325,7 @@ export function TextAnimate({
   // Use provided variants or default variants based on animation type
   const finalVariants = animation
     ? {
-        container: {
-          ...defaultItemAnimationVariants[animation].container,
-          show: {
-            ...defaultItemAnimationVariants[animation].container.show,
-            transition: {
-              staggerChildren: staggerTimings[by],
-            },
-          },
-          exit: {
-            ...defaultItemAnimationVariants[animation].container.exit,
-            transition: {
-              staggerChildren: staggerTimings[by],
-              staggerDirection: -1,
-            },
-          },
-        },
+        container: defaultItemAnimationVariants[animation].container,
         item: defaultItemAnimationVariants[animation].item,
       }
     : { container: defaultContainerVariants, item: defaultItemVariants }
@@ -358,6 +352,7 @@ export function TextAnimate({
       <MotionComponent
         variants={finalVariants.container}
         initial="hidden"
+        custom={delay}
         whileInView={startOnView ? "show" : undefined}
         animate={startOnView ? undefined : "show"}
         viewport={{ once: once }}
@@ -368,8 +363,11 @@ export function TextAnimate({
           <motion.span
             key={`${by}-${segment}-${i}`}
             variants={finalVariants.item}
-            custom={i * staggerTimings[by]}
-            className={cn(by === "line" ? "block" : "inline-block whitespace-pre", segmentClassName)}>
+            custom={i * staggerChildren}
+            className={cn(
+              by === "line" ? "block" : "inline-block whitespace-pre",
+              typeof segmentClassName === "function" ? segmentClassName(segment, i) : segmentClassName
+            )}>
             {segment}
           </motion.span>
         ))}

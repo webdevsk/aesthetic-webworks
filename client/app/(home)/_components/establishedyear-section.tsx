@@ -1,24 +1,21 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { TextSlideUpByLine } from "@/components/higher-order-text-animate-components"
 
 export function EstablishedYearSection() {
   return (
     <section>
       <div className="container relative py-huge">
         <div className="grid place-items-center overflow-hidden">
-          <motion.h1
-            whileInView={{ translateY: "0%" }}
-            style={{ translateY: "25%" }}
-            transition={{ duration: 0.3 }}
-            viewport={{ once: true }}
-            className="variant-h1 max-w-screen-md text-[5.625vw]">
-            <span>Crafting digital</span>{" "}
-            <span className="ms-[7vw] bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              experiences
-            </span>{" "}
-            <span>since 2004</span>
-          </motion.h1>
+          <TextSlideUpByLine
+            className="variant-h1 max-w-screen-md text-[5.625vw]"
+            segmentClassName={(segment) =>
+              segment === "experiences"
+                ? "ms-[7vw] bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+                : ""
+            }>
+            {"Crafting digital\nexperiences\nsince 2004"}
+          </TextSlideUpByLine>
         </div>
 
         <div className="absolute inset-0 -z-10 grid grid-cols-2 bg-[size:40%_center] bg-repeat-round">
