@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { createCategory, deleteCategory, getCategories, updateCategory } from "@/lib/actions"
-import type { Category } from "@/lib/actions"
+import type { Category } from "@/lib/schemas"
 import { Edit, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 

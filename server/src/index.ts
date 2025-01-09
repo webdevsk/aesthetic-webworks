@@ -14,7 +14,7 @@ import categoriesRouter from "./routes/categories"
 import testimonialsRouter from "./routes/testimonials"
 
 const app = express()
-const port = process.env.PORT || 3001
+const port = process.env.PORT || 8000
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"
 
 // Middleware

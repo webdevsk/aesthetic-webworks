@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
 import { createTestimonial, deleteTestimonial, getTestimonials, updateTestimonial } from "@/lib/actions"
-import type { Testimonial } from "@/lib/actions"
+import type { Testimonial } from "@/lib/schemas"
 import { cn } from "@/lib/utils"
 import { Edit, Plus, Trash2 } from "lucide-react"
 import { X } from "lucide-react"
@@ -197,7 +197,7 @@ export default function TestimonialsPage() {
             </div>
             <div>
               <Label htmlFor="authorCompany">Company</Label>
-              <Input id="authorCompany" name="authorCompany" defaultValue={selectedTestimonial?.author.company} />
+              <Input id="authorCompany" name="authorCompany" defaultValue={selectedTestimonial?.author.company || ""} />
             </div>
             <div>
               <Label htmlFor="authorImage">Author Image</Label>
