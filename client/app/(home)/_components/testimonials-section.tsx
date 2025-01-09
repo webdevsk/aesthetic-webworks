@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef } from "react"
+import { TextSlideUpByText, TextSlideUpByWord } from "@/components/higher-order-text-animate-components"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Testimonial, testimonials } from "@/data/data"
 import { LoaderCircle } from "lucide-react"
@@ -49,9 +50,13 @@ function Heading() {
       ref={target}
       style={{ ["--progress" as string]: scrollYProgress }}
       className="scale-[calc(100%_-_(var(--progress)_*_10%))] space-y-8">
-      <h2 className="variant-h2">Client Feedback</h2>
+      <TextSlideUpByWord as="h2" className="variant-h2">
+        Client Feedback
+      </TextSlideUpByWord>
       <div className="flex items-end justify-between gap-4">
-        <h4 className="variant-h4">We’re collaborators - We build tight-knit partnerships with our clients.</h4>
+        <TextSlideUpByText as="h4" className="variant-h4">
+          We’re collaborators - We build tight-knit partnerships with our clients.
+        </TextSlideUpByText>
         <div className="variant-h4 inline-flex items-center gap-4 text-muted">
           <LoaderCircle className="animate-spin" size={40} />
           <span>Keep scrolling</span>

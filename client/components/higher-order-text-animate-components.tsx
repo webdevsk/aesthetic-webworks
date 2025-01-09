@@ -15,3 +15,7 @@ export function TextSlideUpByCharacter(props: TextAnimateProps) {
 export function TextSlideUpByText(props: TextAnimateProps) {
   return <TextAnimate by="text" startOnView animation="slideUp" {...props}></TextAnimate>
 }
+
+export function TextFadeInByText(props: TextAnimateProps) {
+  return <TextAnimate by="text" startOnView animation="fadeIn" {...props}></TextAnimate>
+}
