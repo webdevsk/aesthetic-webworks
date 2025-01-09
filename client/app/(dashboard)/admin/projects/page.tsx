@@ -113,7 +113,7 @@ export default function ProjectsPage() {
           }
         })
       )
-
+      console.log(Object.fromEntries(formData.entries()))
       // Then create/update the project
       const result = selectedProject
         ? await updateProject(Number(selectedProject.id), formData)

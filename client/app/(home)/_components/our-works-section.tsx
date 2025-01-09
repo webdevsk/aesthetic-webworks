@@ -6,10 +6,10 @@ import { HorizontalScrollTrigger } from "@/components/horizontal-scroll-trigger"
 import { AnimatedLink } from "@/components/ui/animated-button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { projects } from "@/data/data"
+import { Project } from "@/lib/schemas"
 import { motion, useInView } from "motion/react"
 
-export const OurWorksSection = () => {
+export const OurWorksSection = ({ projects }: { projects: Project[] }) => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true })
   return (
@@ -26,15 +26,17 @@ export const OurWorksSection = () => {
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}>
               <Card className="relative aspect-[1.25] min-w-[43.125vw] overflow-hidden bg-transparent text-primary-foreground ring-0 ring-primary transition-shadow duration-300 hover:ring-4">
-                {!!project.image && (
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="inset-0 -z-10 object-cover"
-                    priority={index === 0}
-                  />
-                )}
+                <Image
+                  src={
+                    project.image
+                      ? `${process.env.NEXT_PUBLIC_API_URL}${project.image}`
+                      : "/project-placeholder-image.jpg"
+                  }
+                  alt={project.title}
+                  fill
+                  className="inset-0 -z-10 object-cover"
+                  priority={index === 0}
+                />
                 <div className="flex size-full flex-col gap-4">
                   <div className="self-end">{project.isLatest && <Badge>Latest</Badge>}</div>
                   <h2 className="variant-h2 mt-auto">{project.title}</h2>

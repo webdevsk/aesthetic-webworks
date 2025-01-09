@@ -2,32 +2,27 @@ export const initialProjects = [
   {
     id: "romans-partners",
     title: "Romans & Partners",
-    image: "/01_Estate-Agency-Web-Design-London.jpg",
     categories: ["UI/UX Design", "Property Portal"],
     isLatest: true,
   },
   {
     id: "alveena-casa",
     title: "Alveena Casa",
-    image: "/01_Estate-Agency-Web-Design-London.jpg",
     categories: ["UI/UX Design", "E-Commerce"],
   },
   {
     id: "foodi-app",
     title: "Foodi App",
-    image: "/01_Estate-Agency-Web-Design-London.jpg",
     categories: ["Digital Products", "E-Commerce"],
   },
   {
     id: "re-core-pilates",
     title: "Re-Core Pilates",
-    image: "/01_Estate-Agency-Web-Design-London.jpg",
     categories: ["Digital Products", "E-Commerce"],
   },
   {
     id: "tech-superpowers",
     title: "Tech SuperPowers",
-    image: "/01_Estate-Agency-Web-Design-London.jpg",
     categories: ["UI/UX Design", "Website Design"],
   },
 ]

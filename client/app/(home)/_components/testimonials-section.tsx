@@ -3,11 +3,11 @@
 import { useRef } from "react"
 import { TextSlideUpByText, TextSlideUpByWord } from "@/components/higher-order-text-animate-components"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Testimonial, testimonials } from "@/data/data"
+import { Testimonial } from "@/lib/schemas"
 import { LoaderCircle } from "lucide-react"
-import { MotionValue, motion, useScroll, useTransform } from "motion/react"
+import { MotionValue, motion, useScroll } from "motion/react"
 
-export function TestimonialsSection() {
+export function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
   const target = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: target,
@@ -83,7 +83,7 @@ function TestimonialComponent({ id, author: { name, company, image }, content }:
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-8">
           <Avatar className="variant-h5">
-            <AvatarImage src={image} />
+            <AvatarImage src={image ?? undefined} />
             <AvatarFallback>{name.charAt(0)}</AvatarFallback>
           </Avatar>
           <h5 className="variant-h5 text-muted">{name}</h5>

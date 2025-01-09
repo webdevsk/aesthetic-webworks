@@ -6,12 +6,19 @@ import { eq } from "drizzle-orm"
 async function main() {
   console.log("🌱 Seeding database...")
 
+  // Clear existing data (in correct order due to foreign key constraints)
+  console.log("Clearing existing data...")
+  await db.delete(projectCategories)  // Delete junction table first
+  await db.delete(projects)           // Then delete main tables
+  await db.delete(categories)
+  await db.delete(testimonials)
+  console.log("✅ Existing data cleared!")
+
   // Insert projects
   for (const project of initialProjects) {
     await db.insert(projects).values({
       title: project.title,
       slug: project.id,
-      image: project.image,
       isLatest: project.isLatest || false,
     })
   }
@@ -53,6 +60,8 @@ async function main() {
   }
 
   console.log("✅ Database seeded successfully!")
+  process.exit(1)
+
 }
 
 main().catch((error) => {
