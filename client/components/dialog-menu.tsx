@@ -7,6 +7,7 @@ import Link from "next/link"
 import { AnimatedLink } from "@/components/ui/animated-button"
 import { cn } from "@/lib/utils"
 import * as RadixDialog from "@radix-ui/react-dialog"
+import { BlockSlideUp } from "./higher-order-block-animate-components"
 import { TextFadeInByText, TextSlideUpByText } from "./higher-order-text-animate-components"
 import { X } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
@@ -90,7 +91,7 @@ function DialogContentCore(
                   )}>
                   <RadixDialog.Title className="hidden">{title}</RadixDialog.Title>
                   {/* {children} */}
-                  <div className="h-[80dvh] w-[940px] overflow-y-auto rounded-[calc(16px_+_16*(100vw_-_576px)/1024)] bg-foreground text-background [--padding:0_calc(32px_+_48*(100vw_-_576px)/1024)]">
+                  <div className="h-[90dvh] w-[940px] overflow-y-auto rounded-[calc(16px_+_16*(100vw_-_576px)/1024)] bg-foreground text-background [--padding:0_calc(32px_+_48*(100vw_-_576px)/1024)]">
                     <div className="*: sticky top-0 flex items-center justify-between bg-inherit p-[--padding] pt-[calc(32px_+_48*(100vw_-_576px)/1024)]">
                       <TextFadeInByText
                         as="h5"
@@ -152,15 +153,17 @@ function DialogContentCore(
                             </div>
                           ))}
                         </div>
-                        <div className="overflow-hidden">
+                        <BlockSlideUp transition={{ delay: 0.6, duration: 0.3 }}>
+                          <AnimatedLink href="/admin">Admin Panel</AnimatedLink>
+                        </BlockSlideUp>
+                        {/* <div className="overflow-hidden">
                           <motion.div
                             whileInView={{ translateY: "0%", opacity: 1 }}
                             transition={{ delay: 0.6, duration: 0.3 }}
                             viewport={{ once: false }}
                             style={{ translateY: "100%", opacity: 0 }}>
-                            <AnimatedLink href="/admin">Admin Panel</AnimatedLink>
                           </motion.div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>

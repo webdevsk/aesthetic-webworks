@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command" 
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { Check, ChevronsUpDown, X } from "lucide-react"
@@ -34,7 +34,6 @@ export function MultiCombobox({
   const [inputValue, setInputValue] = React.useState("")
 
   const handleSelect = (value: string) => {
-    console.log(value)
     if (selectedValues.includes(value)) {
       onSelect(selectedValues.filter((item) => item !== value))
     } else {

@@ -13,7 +13,7 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
     target: target,
     offset: ["start end", "end start"],
   })
-  return (
+  return !!testimonials.length && (
     <section
       style={{
         backgroundImage:

@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label"
 import { MultiCombobox } from "@/components/ui/multi-combobox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { createCategory, createProject, deleteProject, getCategories, getProjects, updateProject } from "@/lib/actions"
-import type { Category, Project } from "@/lib/actions"
+import type { Category, Project } from "@/lib/schemas"
 import { cn } from "@/lib/utils"
 import { Edit, Plus, Trash2, X } from "lucide-react"
 import { toast } from "sonner"
@@ -113,7 +113,6 @@ export default function ProjectsPage() {
           }
         })
       )
-      console.log(Object.fromEntries(formData.entries()))
       // Then create/update the project
       const result = selectedProject
         ? await updateProject(Number(selectedProject.id), formData)

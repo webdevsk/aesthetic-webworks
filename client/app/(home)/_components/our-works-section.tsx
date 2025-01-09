@@ -12,7 +12,7 @@ import { motion, useInView } from "motion/react"
 export const OurWorksSection = ({ projects }: { projects: Project[] }) => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true })
-  return (
+  return !!projects.length &&  (
     <HorizontalScrollTrigger>
       <div className="flex h-dvh items-center py-[7.5vw]">
         <div ref={ref} className="flex flex-nowrap space-x-[2.5vw] px-[5.625rem]">

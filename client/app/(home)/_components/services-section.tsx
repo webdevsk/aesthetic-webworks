@@ -38,7 +38,7 @@ export function ServicesSection() {
           initial="hidden"
           transition={{ duration: 0.5, delay: 0.3 }}
           variants={{ visible: { scaleY: 1 }, hidden: { scaleY: 0 } }}
-          viewport={{ once: false }}
+          viewport={{ once: true }}
           className="origin-top bg-primary p-0 text-primary-foreground">
           <motion.div
             transition={{ delay: 0.9 }}

@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { motion, useScroll, useSpring } from "motion/react"
 import { cn } from "@/lib/utils"
+import { motion, useScroll, useSpring } from "motion/react"
 
-export const HorizontalScrollTrigger = ({ children, className }: { children: React.ReactNode, className?: string }) => {
+export const HorizontalScrollTrigger = ({ children, className }: { children: React.ReactNode; className?: string }) => {
   const container = useRef<HTMLDivElement>(null)
   const scrollingElement = useRef<HTMLDivElement>(null)
   const [elementWidth, setElementWidth] = useState(0)
@@ -26,7 +26,6 @@ export const HorizontalScrollTrigger = ({ children, className }: { children: Rea
     }
     window.addEventListener("resize", handleOnResize)
     const resizeObserver = new ResizeObserver((entries) => {
-      console.log(entries)
       for (const entry of entries) {
         if (entry.target === scrollingElement.current) handleOnResize()
       }
@@ -59,7 +58,10 @@ export const HorizontalScrollTrigger = ({ children, className }: { children: Rea
           <motion.div
             ref={scrollingElement}
             style={{ ["--progress" as string]: elementWidth > containerWidth ? yProgress : 0 }}
-            className={cn("w-max min-w-full translate-x-[calc((var(--element-width)_-_var(--container-width))_*_(var(--progress)_*_-1px))]", className)}>
+            className={cn(
+              "w-max min-w-full translate-x-[calc((var(--element-width)_-_var(--container-width))_*_(var(--progress)_*_-1px))]",
+              className
+            )}>
             {children}
           </motion.div>
         </div>

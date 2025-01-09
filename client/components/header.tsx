@@ -25,7 +25,7 @@ export function Header() {
           <DialogTrigger asChild>
             <BurgerMenuBtn />
           </DialogTrigger>
-          <DialogContent title="Main Menu">Hello</DialogContent>
+          <DialogContent title="Main Menu"></DialogContent>
         </DialogRoot>
       </header>
       <div

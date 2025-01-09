@@ -74,7 +74,6 @@ router.put("/:id", authenticateToken, upload.single("authorImage"), async (req, 
   try {
     const { id } = req.params
     const { authorName, authorCompany, content } = req.body
-    console.log(req.body)
     // Get the current testimonial to get the old image path
     const [currentTestimonial] = await db.select().from(testimonials).where(eq(testimonials.id, parseInt(id)))
     if (!currentTestimonial) {

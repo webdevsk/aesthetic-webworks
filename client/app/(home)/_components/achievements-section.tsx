@@ -23,6 +23,7 @@ export function AchievementsSection() {
                 <motion.div
                   key={d}
                   whileInView="visible"
+                  viewport={{ once: true }}
                   initial="hidden"
                   transition={{ staggerChildren: 0.1 }}
                   className="space-y-8">
@@ -33,7 +34,7 @@ export function AchievementsSection() {
                     <Counter
                       variants={{ visible: { opacity: 1 }, hidden: { opacity: 0 } }}
                       value={q}
-                      inViewOnce={false}
+                      inViewOnce={true}
                     />
                   </motion.h2>
                   <motion.h4

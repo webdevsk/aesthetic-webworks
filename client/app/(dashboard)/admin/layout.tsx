@@ -2,7 +2,7 @@ import { cookies } from "next/headers"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { FolderKanban, LayoutGrid, LogOut, MessageSquareQuote, Tags } from "lucide-react"
+import { FolderKanban, Home, LayoutGrid, LogOut, MessageSquareQuote, Tags } from "lucide-react"
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const token = (await cookies()).get("token")
@@ -43,7 +43,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </Link>
           </Button>
         </nav>
-        <div className="absolute bottom-4">
+        <div className="absolute bottom-4 flex flex-col gap-2">
+          <Button variant="ghost" className="w-full justify-start" asChild>
+            <Link href="/">
+              <Home className="mr-2 h-4 w-4" />
+              Home
+            </Link>
+          </Button>
           <form action="/api/auth/signout" method="POST">
             <Button variant="ghost" className="w-full justify-start">
               <LogOut className="mr-2 h-4 w-4" />
