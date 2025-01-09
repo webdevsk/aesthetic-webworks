@@ -5,7 +5,7 @@ import { Logo } from "./header"
 import { AnimatePresence, motion } from "motion/react"
 
 export const waitTime = 2500
-export function InitialLoader() {
+export function InitialLoader({ children }: { children: React.ReactNode }) {
   const [show, setShow] = useState(true)
 
   useEffect(() => {
@@ -24,25 +24,26 @@ export function InitialLoader() {
     <AnimatePresence>
       {show && (
         <motion.div
+          key="animator-loader"
           initial={{ translateX: "0%" }}
-          exit={{ translateX: "100%", transition: { duration: 0.7 } }}
+          exit={{ translateX: "100%", transition: { delay: 0.5, duration: 0.7, when: "afterChildren" } }}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black">
           <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 1.2, opacity: 0 }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.5, when: "afterChildren" } }}
             className="text-4xl font-bold text-white">
             <Logo className="max-w-16 fill-white" />
             <motion.div
               className="mt-2 h-1 bg-white"
               initial={{ width: 0 }}
-              animate={{ width: "100%" }}
-              transition={{ duration: 2, ease: "easeInOut" }}
+              animate={{ width: "90%" }}
+              transition={{ duration: 1, ease: "easeInOut" }}
             />
           </motion.div>
         </motion.div>
       )}
+      {!show && <motion.div key="content">{children}</motion.div>}
     </AnimatePresence>
   )
 }

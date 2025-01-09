@@ -1,5 +1,6 @@
 import { Footer } from "@/components/footer"
 import { Header } from "@/components/header"
+import { InitialLoader } from "@/components/initial-loader"
 
 export default function HomeLayout({
   children,
@@ -9,7 +10,7 @@ export default function HomeLayout({
   return (
     <>
       <Header />
-      {children}
+      <InitialLoader>{children}</InitialLoader>
       <Footer />
     </>
   )
