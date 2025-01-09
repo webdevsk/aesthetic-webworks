@@ -83,7 +83,7 @@ function TestimonialComponent({ id, author: { name, company, image }, content }:
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-8">
           <Avatar className="variant-h5">
-            <AvatarImage src={image ?? undefined} />
+            <AvatarImage src={image ? `${process.env.NEXT_PUBLIC_API_URL}${image}` : undefined} />
             <AvatarFallback>{name.charAt(0)}</AvatarFallback>
           </Avatar>
           <h5 className="variant-h5 text-muted">{name}</h5>

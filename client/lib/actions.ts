@@ -60,7 +60,7 @@ const handleApiError = (error: any, operation: string): ErrorResponse => {
   })
 }
 
-const getAuthHeaders = async () => {
+const getAuthHeaders = async (isMultipart = false) => {
   const cookieStore = await cookies()
   const token = cookieStore.get("token")?.value
 
@@ -70,14 +70,16 @@ const getAuthHeaders = async () => {
 
   return {
     Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
+    ...(isMultipart ? {} : { "Content-Type": "application/json" }),
   }
 }
 
 export async function getProjects(): Promise<{ success: true; data: Project[] } | ErrorResponse> {
   try {
+    const headers = await getAuthHeaders()
     const response = await fetch(API_URLS.projects.list, {
       cache: "no-store",
+      headers,
     })
 
     if (!response.ok) {
@@ -94,13 +96,13 @@ export async function getProjects(): Promise<{ success: true; data: Project[] } 
 }
 
 export async function createProject(formData: FormData): Promise<{ success: true; data: Project } | ErrorResponse> {
-  console.log(formData.get("title"))
   try {
-    const headers = await getAuthHeaders()
+    const headers = await getAuthHeaders(true)
+
     const response = await fetch(API_URLS.projects.create, {
       method: "POST",
       headers,
-      body: formData,
+      body: formData, // Send FormData directly
     })
 
     if (!response.ok) {
@@ -122,11 +124,12 @@ export async function updateProject(
   formData: FormData
 ): Promise<{ success: true; data: Project } | ErrorResponse> {
   try {
-    const headers = await getAuthHeaders()
+    const headers = await getAuthHeaders(true)
+
     const response = await fetch(API_URLS.projects.update(id), {
       method: "PUT",
       headers,
-      body: JSON.stringify(formData),
+      body: formData, // Send FormData directly
     })
 
     if (!response.ok) {
@@ -276,11 +279,12 @@ export async function createTestimonial(
   formData: FormData
 ): Promise<{ success: true; data: Testimonial } | ErrorResponse> {
   try {
-    const headers = await getAuthHeaders()
+    const headers = await getAuthHeaders(true)
+
     const response = await fetch(API_URLS.testimonials.create, {
       method: "POST",
       headers,
-      body: formData,
+      body: formData, // Send FormData directly
     })
 
     if (!response.ok) {
@@ -302,11 +306,12 @@ export async function updateTestimonial(
   formData: FormData
 ): Promise<{ success: true; data: Testimonial } | ErrorResponse> {
   try {
-    const headers = await getAuthHeaders()
+    const headers = await getAuthHeaders(true)
+
     const response = await fetch(API_URLS.testimonials.update(id), {
       method: "PUT",
       headers,
-      body: formData,
+      body: formData, // Send FormData directly
     })
 
     if (!response.ok) {
