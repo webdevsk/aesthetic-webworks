@@ -13,7 +13,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-64 border-r bg-background px-3 py-4">
+      <div className="flex w-64 flex-col border-r bg-background px-3 py-4">
         <div className="mb-8">
           <h2 className="text-lg font-semibold">Admin Dashboard</h2>
         </div>
@@ -43,7 +43,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </Link>
           </Button>
         </nav>
-        <div className="absolute bottom-4 flex flex-col gap-2">
+        <div className="mb-4 mt-auto flex flex-col gap-2">
           <Button variant="ghost" className="w-full justify-start" asChild>
             <Link href="/">
               <Home className="mr-2 h-4 w-4" />

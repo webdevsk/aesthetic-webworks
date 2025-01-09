@@ -1,6 +1,7 @@
 "use client"
 
 import { TextSlideUpByLine, TextSlideUpByWord } from "@/components/higher-order-text-animate-components"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card } from "@/components/ui/card"
 import { motion } from "motion/react"
 
@@ -22,7 +23,10 @@ export function TrustSection() {
               <div className="flex items-center gap-6">
                 <div className="flex items-center -space-x-6">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="size-[72px] rounded-full bg-black"></div>
+                    <Avatar key={i} className="variant-h5">
+                      <AvatarImage src="/avatar.png" />
+                      <AvatarFallback>{i}</AvatarFallback>
+                    </Avatar>
                   ))}
                 </div>
                 <h5 className="variant-h5 text-muted">Brands who've trusted us...</h5>

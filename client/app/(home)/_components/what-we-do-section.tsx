@@ -41,14 +41,12 @@ export function WhatWeDoSection() {
                     <h5 className="variant-h5">{category.topProject.title}</h5>
                   </div>
                   <div className="relative size-[72px] overflow-clip rounded-full bg-muted">
-                    {category.topProject.image && (
-                      <Image
-                        src={category.topProject.image}
-                        alt={category.topProject.title}
-                        fill
-                        className="object-cover"
-                      />
-                    )}
+                    <Image
+                      src="/project-placeholder-image.jpg"
+                      alt={category.topProject.title}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                   <svg
                     width="48.7295674px"

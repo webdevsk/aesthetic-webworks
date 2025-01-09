@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
 
 export default function SignInPage() {
   const router = useRouter()
@@ -37,10 +38,13 @@ export default function SignInPage() {
         throw new Error(data.error || "Failed to sign in")
       }
 
+      toast.success("Successfully signed in!")
       router.push("/admin")
       router.refresh()
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Failed to sign in")
+      const errorMessage = error instanceof Error ? error.message : "Failed to sign in"
+      setError(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
