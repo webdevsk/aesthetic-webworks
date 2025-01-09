@@ -12,6 +12,8 @@ import { TestimonialsSection } from "./_components/testimonials-section"
 import { TrustSection } from "./_components/trust-section"
 import { WhatWeDoSection } from "./_components/what-we-do-section"
 
+export const dynamic = "force-dynamic"
+
 const Page = async () => {
   const [projectsRes, testimonialsRes] = await Promise.all([getProjects(), getTestimonials()])
 

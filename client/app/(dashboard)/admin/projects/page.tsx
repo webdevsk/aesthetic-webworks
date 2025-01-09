@@ -80,17 +80,20 @@ export default function ProjectsPage() {
     const formData = new FormData(e.currentTarget)
     const imageFile = formData.get("image") as File
 
-    if (keepExistingImage && selectedProject?.image) {
+    // Remove image field if no new image is provided or if keeping existing image
+    if ((keepExistingImage && selectedProject?.image) || !imageFile || imageFile.size === 0) {
       formData.delete("image")
     } else if (imageFile && imageFile.size > 0) {
       if (imageFile.size > 1024 * 1024) {
         toast.error("Image size must be less than 1MB")
+        setIsLoading(false)
         return
       }
 
       const allowedTypes = ["image/jpeg", "image/png", "image/webp"]
       if (!allowedTypes.includes(imageFile.type)) {
         toast.error("Only JPEG, PNG and WebP images are allowed")
+        setIsLoading(false)
         return
       }
     }

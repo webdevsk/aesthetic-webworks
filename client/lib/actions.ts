@@ -76,10 +76,11 @@ const getAuthHeaders = async (isMultipart = false) => {
 
 export async function getProjects(): Promise<{ success: true; data: Project[] } | ErrorResponse> {
   try {
-    const headers = await getAuthHeaders()
     const response = await fetch(API_URLS.projects.list, {
       cache: "no-store",
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
 
     if (!response.ok) {
@@ -170,6 +171,9 @@ export async function getCategories(): Promise<{ success: true; data: Category[]
   try {
     const response = await fetch(API_URLS.categories.list, {
       cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
 
     if (!response.ok) {
@@ -260,6 +264,9 @@ export async function getTestimonials(): Promise<{ success: true; data: Testimon
   try {
     const response = await fetch(API_URLS.testimonials.list, {
       cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
 
     if (!response.ok) {

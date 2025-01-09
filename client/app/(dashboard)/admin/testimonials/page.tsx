@@ -60,7 +60,7 @@ export default function TestimonialsPage() {
     const formData = new FormData(e.currentTarget)
     const imageFile = formData.get("authorImage") as File
 
-    if (keepExistingImage && selectedTestimonial?.author.image) {
+    if ((keepExistingImage && selectedTestimonial?.author.image) || !imageFile || imageFile.size === 0) {
       formData.delete("authorImage")
     } else if (imageFile && imageFile.size > 0) {
       if (imageFile.size > 1024 * 1024) {
