@@ -7,6 +7,7 @@ import Link from "next/link"
 import { AnimatedLink } from "@/components/ui/animated-button"
 import { cn } from "@/lib/utils"
 import * as RadixDialog from "@radix-ui/react-dialog"
+import { TextFadeInByText, TextSlideUpByText } from "./higher-order-text-animate-components"
 import { X } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 
@@ -91,7 +92,11 @@ function DialogContentCore(
                   {/* {children} */}
                   <div className="h-[80dvh] w-[940px] overflow-y-auto rounded-[calc(16px_+_16*(100vw_-_576px)/1024)] bg-foreground text-background [--padding:0_calc(32px_+_48*(100vw_-_576px)/1024)]">
                     <div className="*: sticky top-0 flex items-center justify-between bg-inherit p-[--padding] pt-[calc(32px_+_48*(100vw_-_576px)/1024)]">
-                      <h5 className="font-base text-[calc(16px_+_8*(100vw_-_576px)/1024)] leading-snug">Navigation</h5>
+                      <TextFadeInByText
+                        as="h5"
+                        className="font-base text-[calc(16px_+_8*(100vw_-_576px)/1024)] leading-snug">
+                        Navigation
+                      </TextFadeInByText>
                       <RadixDialog.Close className="group grid size-10 place-items-center rounded-full bg-[#ffffff26] transition-colors hover:bg-[#ffffff40]">
                         <X className="transition-transform group-hover:scale-110" />
                       </RadixDialog.Close>
@@ -100,8 +105,14 @@ function DialogContentCore(
                     <div className="p-[--padding]">
                       {/* Nav menu */}
                       <div className="my-[calc(16px_+_24*(100vw_-_576px)/1024)] space-y-4">
-                        {["Case Studies", "Our Agency", "Contact Us", "News"].map((menu) => (
-                          <div key={menu} className="flex items-center gap-4">
+                        {["Case Studies", "Our Agency", "Contact Us", "News"].map((menu, i) => (
+                          <motion.div
+                            whileInView={{ opacity: 1 }}
+                            transition={{ delay: i * 0.2, duration: 0.2 }}
+                            viewport={{ once: false }}
+                            style={{ opacity: 0 }}
+                            key={menu}
+                            className="flex items-center gap-4">
                             <AnimatedLink
                               href={`#`}
                               className="rounded-none border-0 bg-transparent p-0 text-[calc(32px_+_24*(100vw_-_576px)/1024)] font-semibold outline-none ring-0 hover:bg-transparent hover:ring-0">
@@ -113,7 +124,7 @@ function DialogContentCore(
                                 <span>13</span>
                               </div>
                             )}
-                          </div>
+                          </motion.div>
                         ))}
                       </div>
 
@@ -125,16 +136,31 @@ function DialogContentCore(
                             { href: "/", label: "LinkedIn" },
                             { href: "/", label: "Twitter" },
                             { href: "/", label: "Awwwards" },
-                          ].map(({ href, label }) => (
-                            <Link
-                              key={label}
-                              href={href}
-                              className="relative before:absolute before:right-0 before:top-0 before:size-1 before:translate-y-2 before:border-r-[1.5px] before:border-t-[1.5px] before:border-background before:opacity-0 before:transition-all before:content-[''] hover:before:translate-x-2 hover:before:translate-y-0 hover:before:opacity-100">
-                              {label}
-                            </Link>
+                          ].map(({ href, label }, i) => (
+                            <div key={label} className="overflow-hidden">
+                              <motion.div
+                                whileInView={{ translateY: "0%" }}
+                                transition={{ delay: 0.3 + i * 0.2, duration: 0.2 }}
+                                viewport={{ once: false }}
+                                style={{ translateY: "100%" }}>
+                                <Link
+                                  href={href}
+                                  className="relative before:absolute before:right-0 before:top-0 before:size-1 before:translate-y-2 before:border-r-[1.5px] before:border-t-[1.5px] before:border-background before:opacity-0 before:transition-all before:content-[''] hover:before:translate-x-2 hover:before:translate-y-0 hover:before:opacity-100">
+                                  {label}
+                                </Link>
+                              </motion.div>
+                            </div>
                           ))}
                         </div>
-                        <AnimatedLink href="/admin">Admin Panel</AnimatedLink>
+                        <div className="overflow-hidden">
+                          <motion.div
+                            whileInView={{ translateY: "0%", opacity: 1 }}
+                            transition={{ delay: 0.6, duration: 0.3 }}
+                            viewport={{ once: false }}
+                            style={{ translateY: "100%", opacity: 0 }}>
+                            <AnimatedLink href="/admin">Admin Panel</AnimatedLink>
+                          </motion.div>
+                        </div>
                       </div>
                     </div>
                   </div>
