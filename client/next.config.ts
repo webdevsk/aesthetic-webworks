@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         port: "5000",
         pathname: "/uploads/**",
       },
+      {
+        protocol: "https",
+        hostname: "artistsweb-clone-production.up.railway.app",
+        pathname: "/uploads/**",
+      },
     ],
   },
 }

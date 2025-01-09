@@ -2,10 +2,36 @@ import multer from "multer"
 import path from "path"
 import fs from "fs/promises"
 
+// Helper function to ensure upload directory exists
+async function ensureUploadDir(uploadPath: string) {
+  try {
+    await fs.access(uploadPath)
+  } catch {
+    await fs.mkdir(uploadPath, { recursive: true })
+  }
+}
+
+// Get the absolute path for uploads
+const getUploadPath = () => {
+  // If UPLOAD_DIR is absolute, use it directly
+  if (process.env.UPLOAD_DIR && path.isAbsolute(process.env.UPLOAD_DIR)) {
+    return process.env.UPLOAD_DIR
+  }
+
+  // Otherwise, resolve relative to project root
+  const projectRoot = path.resolve(__dirname, "..", "..")
+  return path.join(projectRoot, process.env.UPLOAD_DIR || "uploads")
+}
+
+const uploadPath = getUploadPath()
+
+// Ensure upload directory exists
+ensureUploadDir(uploadPath).catch(console.error)
+
 // Configure multer for image uploads
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
-    cb(null, path.join(__dirname, "..", "..", process.env.UPLOAD_DIR || "uploads"))
+    cb(null, uploadPath)
   },
   filename: (_req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9)
@@ -32,7 +58,7 @@ export const upload = multer({
 export async function deleteImageFile(imagePath: string | undefined | null) {
   if (!imagePath) return
   try {
-    const fullPath = path.join(__dirname, "..", "..", imagePath.replace(/^\//, ""))
+    const fullPath = path.join(uploadPath, imagePath.replace(/^\/uploads\//, ""))
     await fs.unlink(fullPath)
   } catch (error) {
     // Just log the error without throwing
