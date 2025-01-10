@@ -38,7 +38,7 @@ export default function SignInPage() {
         throw new Error(data.error || "Failed to sign in")
       }
 
-      toast.success("Successfully signed in!")
+      // toast.success("Successfully signed in!")
       router.push("/admin")
       router.refresh()
     } catch (error) {
