@@ -9,10 +9,10 @@ A modern, full-stack web application showcasing a portfolio website with admin d
 - **Next.js 15** with TypeScript
 - **React 19** for UI components
 - **TailwindCSS** for styling
-- **Radix UI** for accessible component primitives
-- **Framer Motion** for animations
-- **React Hook Form** with Zod for form validation
-- **Next Themes** for dark/light mode support
+- **Shadcn UI** for accessible component primitives
+- **Motion** for animations
+- **TypeScript** for type safety
+- **Zod** for api validation
 
 ### Backend
 
@@ -21,21 +21,18 @@ A modern, full-stack web application showcasing a portfolio website with admin d
 - **Drizzle ORM** for database operations
 - **JWT** for authentication
 - **Multer** for file uploads
-- **Zod** for validation
-- **CORS** enabled
+- **TypeScript** for type safety
 
 ## Features
 
-- 🎨 Modern, responsive UI with dark/light mode support
-- 🔐 Secure authentication system
+- ✨ Smooth animations and transitions
+- 🛡️ Type-safe frontend and backend with TypeScript
+- 📊 Database management with Drizzle ORM
 - 📊 Admin dashboard for content management
 - 💼 Project portfolio management
 - 👥 Testimonials management
-- 📱 Mobile-first design approach
-- ✨ Smooth animations and transitions
-- 🔄 Real-time form validation
 - 📤 File upload capabilities
-- 🛡️ Type-safe backend with TypeScript
+- 🔐 Secure authentication system
 
 ## Getting Started
 
