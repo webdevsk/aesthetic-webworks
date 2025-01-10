@@ -38,9 +38,15 @@ export default function SignInPage() {
         throw new Error(data.error || "Failed to sign in")
       }
 
-      // toast.success("Successfully signed in!")
-      router.push("/admin")
+      toast.success("Successfully signed in!")
       router.refresh()
+      router.push("/admin")
+      setTimeout(() => {
+        // workaround when push doesnt work sometimes in production
+        // https://github.com/vercel/next.js/discussions/51782
+        console.log("Force redirecting")
+        window.location.href = "/admin"
+      }, 3000)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to sign in"
       setError(errorMessage)
