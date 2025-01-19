@@ -257,7 +257,7 @@ export default function ProjectsPage() {
                     <div className="relative h-20 w-20 shrink-0">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={process.env.NEXT_PUBLIC_API_URL + selectedProject.image}
+                        src={selectedProject.image}
                         alt="Current project image"
                         className="h-full w-full rounded-md object-cover"
                       />

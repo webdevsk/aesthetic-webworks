@@ -207,7 +207,7 @@ export default function TestimonialsPage() {
                     <div className="relative h-20 w-20 shrink-0">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={process.env.NEXT_PUBLIC_API_URL + selectedTestimonial.author.image}
+                        src={selectedTestimonial.author.image}
                         alt="Current author image"
                         className="h-full w-full rounded-md object-cover"
                       />

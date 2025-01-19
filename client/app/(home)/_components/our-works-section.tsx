@@ -29,7 +29,7 @@ export const OurWorksSection = ({ projects }: { projects: Project[] }) => {
                 <Image
                   src={
                     project.image
-                      ? `${process.env.NEXT_PUBLIC_API_URL}${project.image}`
+                      ? project.image
                       : "/project-placeholder-image.jpg"
                   }
                   alt={project.title}

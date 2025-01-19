@@ -11,11 +11,16 @@ import { ServicesSection } from "./_components/services-section"
 import { TestimonialsSection } from "./_components/testimonials-section"
 import { TrustSection } from "./_components/trust-section"
 import { WhatWeDoSection } from "./_components/what-we-do-section"
+import { projects } from "@/data/data"
+import { testimonials } from "@/data/data"
 
 export const dynamic = "force-dynamic"
-
+const staticMode = process.env.NEXT_PUBLIC_STATIC && process.env.NEXT_PUBLIC_STATIC === "1"
 const Page = async () => {
-  const [projectsRes, testimonialsRes] = await Promise.all([getProjects(), getTestimonials()])
+  const [projectsRes, testimonialsRes] = staticMode ? [
+    { success: true, data: projects },
+    { success: true, data: testimonials },
+  ] : await Promise.all([getProjects(), getTestimonials()])
 
   if (!projectsRes.success) {
     console.error(projectsRes.error)
