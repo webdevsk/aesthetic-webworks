@@ -9,8 +9,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Artists Web",
-  description: "A portfolio website for artists",
+  title: "Aesthetic Webworks",
+  description: "A Web Design and Development agency landing page",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

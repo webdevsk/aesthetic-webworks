@@ -57,7 +57,7 @@ export const initialTestimonials: TestimonialData[] = [
       company: "TGA Mobility",
     },
     content:
-      "We have worked with Artistsweb to build a complete new website with quite complex connections with our CRM and accounting functions. The end product is brilliant, a really first class blend of design and functionality and the speed and depth of understanding about our business was remarkable. I'd highly recommend them.",
+      "We have worked with Aesthetic Webworks to build a complete new website with quite complex connections with our CRM and accounting functions. The end product is brilliant, a really first class blend of design and functionality and the speed and depth of understanding about our business was remarkable. I'd highly recommend them.",
   },
   {
     id: "2",

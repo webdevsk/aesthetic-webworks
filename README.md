@@ -1,4 +1,4 @@
-# ArtistsWeb Clone - Full Stack Developer Interview Project
+# Aesthetic Webworks - A Web Design and Development agency landing page
 
 A modern, full-stack web application showcasing a portfolio website with admin dashboard capabilities. This project demonstrates proficiency in both frontend and backend development using modern technologies and best practices.
 
@@ -48,7 +48,7 @@ A modern, full-stack web application showcasing a portfolio website with admin d
 
 ```bash
 git clone <repository-url>
-cd artistsweb-clone
+cd aesthetic-webworks
 ```
 
 1. Install dependencies for both client and server:
