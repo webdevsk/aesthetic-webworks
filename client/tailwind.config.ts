@@ -1,6 +1,8 @@
 import type { Config } from "tailwindcss"
 import plugin from "tailwindcss/plugin"
 
+const xlUp = "@media (min-width: theme(screens.xl))"
+
 export default {
   darkMode: ["class"],
   content: [
@@ -12,7 +14,10 @@ export default {
     extend: {
       container: {
         center: true,
-        padding: "5.625rem",
+        padding: {
+          DEFAULT: "20px",
+          xl: "5.625rem",
+        },
         screens: {
           sm: "100%",
           md: "100%",
@@ -66,10 +71,11 @@ export default {
       },
       fontSize: {
         normal: "1rem",
-        huge: "7.5vw",
+        huge: "var(--huge)",
       },
       spacing: {
-        huge: "7.5vw",
+        huge: "var(--huge)",
+        clientHeaderHeight: "var(--client-header-height)",
       },
       lineHeight: {
         tight: "1.15",
@@ -99,12 +105,15 @@ export default {
   },
   plugins: [
     require("tailwindcss-animate"),
-    plugin(function ({ addComponents }) {
+    plugin(function ({ addComponents, theme }) {
       addComponents({
         ".variant-h1": {
-          fontSize: "clamp(2rem, 7.5vw, 7.5rem)",
+          fontSize: "40px",
           lineHeight: "1.1",
           fontWeight: "600",
+          [xlUp]: {
+            fontSize: "clamp(2rem, 7.5vw, 7.5rem)",
+          },
         },
         ".variant-h2": {
           fontSize: "clamp(1.8rem, 3.5vw, 5rem)",
@@ -117,14 +126,20 @@ export default {
           fontWeight: "600",
         },
         ".variant-h4": {
-          fontSize: "1.5vw",
+          fontSize: "1rem",
           lineHeight: "1.4",
           fontWeight: "400",
+          [xlUp]: {
+            fontSize: "1.5vw",
+          }
         },
         ".variant-h5": {
-          fontSize: "24px",
+          fontSize: "14px",
           lineHeight: "1.4",
           fontWeight: "400",
+          [xlUp]: {
+            fontSize: "1.5rem",
+          },
         },
         ".variant-h6": {
           fontSize: "16px",

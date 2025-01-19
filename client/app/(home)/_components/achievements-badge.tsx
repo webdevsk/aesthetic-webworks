@@ -37,8 +37,8 @@ export const AchievementsBadge = () => {
   }, [])
 
   return (
-    <div className="relative flex items-center gap-6 text-2xl">
-      <div className="grid size-[72px] place-items-center overflow-hidden rounded-full bg-black text-white">
+    <div className="relative flex items-center gap-4 xl:gap-6 variant-h5">
+      <div className="grid size-10 xl:size-[72px] place-items-center overflow-hidden rounded-full bg-black text-white">
         <AnimatePresence mode="wait">
           <motion.span
             key={currentAchievementIndex}
