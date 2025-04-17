@@ -3,7 +3,6 @@ import { Inter } from "next/font/google"
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
 import HolyLoader from "holy-loader"
-import { cn } from "@/lib/utils"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,7 +16,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={cn("[--client-header-height:100px]",inter.className)}>
+      <body className={inter.className}>
         <HolyLoader color="#525aff" height="2px" easing="ease" showSpinner={false} speed={300} initialPosition={0.08} />
         {children}
         <Toaster richColors position="bottom-right" />
@@ -25,3 +24,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 }
+
+// import type { Metadata } from "next"
+// import { Inter } from "next/font/google"
+// import { Toaster } from "@/components/ui/sonner"
+// import "./globals.css"
+// import HolyLoader from "holy-loader"
+// import { cn } from "@/lib/utils"
+
+// const inter = Inter({
+//   subsets: ["latin"],
+// })
+
+// export const metadata: Metadata = {
+//   title: "Aesthetic Webworks",
+//   description: "A Web Design and Development agency landing page",
+// }
+
+// export default function RootLayout({ children }: { children: React.ReactNode }) {
+//   return (
+//     <html lang="en">
+//       <body className={cn("[--client-header-height:100px]",inter.className)}>
+//         <HolyLoader color="#525aff" height="2px" easing="ease" showSpinner={false} speed={300} initialPosition={0.08} />
+//         {children}
+//         <Toaster richColors position="bottom-right" />
+//       </body>
+//     </html>
+//   )
+// }

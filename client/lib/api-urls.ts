@@ -1,4 +1,5 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL
+// (If using separate backend) const BASE_URL = process.env.NEXT_PUBLIC_API_URL
+const BASE_URL = ""
 
 export const API_URLS = {
   projects: {

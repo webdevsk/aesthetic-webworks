@@ -8,8 +8,8 @@ import { AchievementsBadge } from "./achievements-badge"
 export const HeroSection = () => {
   return (
     <section>
-      <div className="container flex flex-col justify-end gap-y-huge py-huge xl:min-h-screen max-xl:mt-clientHeaderHeight">
-        <div className="variant-h1 max-w-7xl">
+      <div className="container flex min-h-screen flex-col justify-end gap-y-huge py-huge">
+        <div className="max-w-7xl text-huge/tight font-semibold">
           <TextSlideUpByWord
             delay={1}
             staggerChildren={0.1}
@@ -21,22 +21,63 @@ export const HeroSection = () => {
             Crafting Digital Experiences
           </TextSlideUpByWord>
         </div>
-        <div className="flex items-center flex-wrap gap-y-8 xl:gap-y-huge gap-x-8">
+        <div className="flex items-center gap-8">
           <BlockSlideUp transition={{ delay: 1, duration: 0.3 }}>
             <AchievementsBadge />
           </BlockSlideUp>
-          <div className="xl:space-y-huge">
-            <BlockSlideUp containerClassName="xl:ms-auto max-w-lg" transition={{ delay: 1, duration: 0.3 }}>
-              <p className="variant-h4">
-                We build engaging websites, brands & innovative e-commerce solutions.
-              </p>
-            </BlockSlideUp>
-            <BlockSlideUp transition={{ delay: 1, duration: 0.3 }}>
-              <AnimatedLink href="#">Case Studies</AnimatedLink>
-            </BlockSlideUp>
-          </div>
+          <BlockSlideUp containerClassName="ms-auto max-w-lg" transition={{ delay: 1, duration: 0.3 }}>
+            <p className="text-[28.8px] leading-tight">
+              We build engaging websites, brands & innovative e-commerce solutions.
+            </p>
+          </BlockSlideUp>
+          <BlockSlideUp transition={{ delay: 1, duration: 0.3 }}>
+            <AnimatedLink href="#">Case Studies</AnimatedLink>
+          </BlockSlideUp>
         </div>
       </div>
     </section>
   )
 }
+
+// "use client"
+
+// import { BlockSlideUp } from "@/components/higher-order-block-animate-components"
+// import { TextSlideUpByLine, TextSlideUpByWord } from "@/components/higher-order-text-animate-components"
+// import { AnimatedLink } from "@/components/ui/animated-button"
+// import { AchievementsBadge } from "./achievements-badge"
+
+// export const HeroSection = () => {
+//   return (
+//     <section>
+//       <div className="container flex flex-col justify-end gap-y-huge py-huge xl:min-h-screen max-xl:mt-clientHeaderHeight">
+//         <div className="variant-h1 max-w-7xl">
+//           <TextSlideUpByWord
+//             delay={1}
+//             staggerChildren={0.1}
+//             segmentClassName={(segment) =>
+//               segment === "Digital"
+//                 ? "animate-gradientMove bg-gradient-to-r from-primary via-secondary to-primary bg-[length:1600px_100%] bg-clip-text text-transparent"
+//                 : ""
+//             }>
+//             Crafting Digital Experiences
+//           </TextSlideUpByWord>
+//         </div>
+//         <div className="flex items-center flex-wrap gap-y-8 xl:gap-y-huge gap-x-8">
+//           <BlockSlideUp transition={{ delay: 1, duration: 0.3 }}>
+//             <AchievementsBadge />
+//           </BlockSlideUp>
+//           <div className="xl:space-y-huge">
+//             <BlockSlideUp containerClassName="xl:ms-auto max-w-lg" transition={{ delay: 1, duration: 0.3 }}>
+//               <p className="variant-h4">
+//                 We build engaging websites, brands & innovative e-commerce solutions.
+//               </p>
+//             </BlockSlideUp>
+//             <BlockSlideUp transition={{ delay: 1, duration: 0.3 }}>
+//               <AnimatedLink href="#">Case Studies</AnimatedLink>
+//             </BlockSlideUp>
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//   )
+// }
