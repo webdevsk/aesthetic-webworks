@@ -1,14 +1,54 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/db"
-import { projects, projectCategories, categories } from "@/db/schema"
-import { eq, inArray } from "drizzle-orm"
+import { categories, projectCategories, projects } from "@/db/schema"
 import { authenticateToken } from "@/server/middleware/auth"
+import { uploadToImgbb } from "@/utils/imgbb"
+import { eq, inArray } from "drizzle-orm"
+import { z } from "zod"
 
 // PUT /api/projects/:id - Update a project (no file upload)
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     await authenticateToken(req.headers)
-    const { title, categories: categoryTitles, isLatest } = await req.json()
+    const formData = await req.formData()
+
+    // Extract and validate fields using zod
+    const ProjectUpdateSchema = z.object({
+      title: z.string().min(1),
+      isLatest: z.union([z.string(), z.boolean()]).transform(val => val === 'true' || val === true),
+      categories: z.string().optional(), // Will be parsed as JSON or comma-separated
+    })
+
+    const raw = {
+      title: formData.get('title'),
+      isLatest: formData.get('isLatest'),
+      categories: formData.get('categories') || undefined,
+    }
+    const parsed = ProjectUpdateSchema.safeParse(raw)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+    }
+    const { title, isLatest, categories } = parsed.data
+
+    // Parse categories to array
+    let categoryTitles: string[] = []
+    if (categories) {
+      try {
+        categoryTitles = JSON.parse(categories)
+      } catch {
+        categoryTitles = categories.split(',').map((t: string) => t.trim())
+      }
+    }
+
+    // Extract file
+    let imageUrl: string | undefined
+    const file = formData.get('image') as File | null
+    if (file) {
+      const arrayBuffer = await file.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
+      imageUrl = await uploadToImgbb(buffer, process.env.IMGBB_API_KEY!, file.name)
+    }
+
     const slug = title.toLowerCase().replace(/\s+/g, "-")
 
     // Get the current project
@@ -20,7 +60,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const updateData: any = {
       title,
       slug,
-      isLatest: !!isLatest,
+      isLatest,
+    }
+    if (imageUrl) {
+      updateData.image = imageUrl
     }
 
     const [project] = await db
@@ -32,12 +75,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     // Remove existing categories
     await db.delete(projectCategories).where(eq(projectCategories.projectId, parseInt(params.id)))
 
-    if (categoryTitles) {
-      const categoryTitlesArray = Array.isArray(categoryTitles) ? categoryTitles : [categoryTitles]
+    if (categoryTitles.length > 0) {
       const existingCategories = await db
         .select()
         .from(categories)
-        .where(inArray(categories.title, categoryTitlesArray.map((t: string) => t.trim())))
+        .where(inArray(categories.title, categoryTitles.map((t: string) => t.trim())))
 
       if (existingCategories.length > 0) {
         await db.insert(projectCategories).values(
