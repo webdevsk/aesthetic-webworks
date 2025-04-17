@@ -78,6 +78,7 @@ export default function CategoriesPage() {
       toast.success(selectedCategory ? "Category updated" : "Category created")
       fetchCategories()
     } catch (error) {
+      console.error(error)
       toast.error("Failed to save category")
     } finally {
       setIsLoading(false)
@@ -98,6 +99,7 @@ export default function CategoriesPage() {
       toast.success("Category deleted")
       // No need to manually fetch categories as the server action handles revalidation
     } catch (error) {
+      console.error(error)
       toast.error("Failed to delete category")
     } finally {
       setIsLoading(false)

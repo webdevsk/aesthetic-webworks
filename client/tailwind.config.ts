@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+import tailwindcssAnimate from "tailwindcss-animate"
 import plugin from "tailwindcss/plugin"
 
 export default {
@@ -98,7 +99,7 @@ export default {
     },
   },
   plugins: [
-    require("tailwindcss-animate"),
+    tailwindcssAnimate,
     plugin(function ({ addComponents }) {
       addComponents({
         ".variant-h1": {

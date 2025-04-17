@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/db"
-import { categories, projectCategories, projects } from "@/db/schema"
-import { authenticateToken } from "@/server/middleware/auth"
+import { Project, categories, projectCategories, projects } from "@/db/schema"
+import { authenticateToken } from "@/utils/authenticate-token"
 import { uploadToImgbb } from "@/utils/imgbb"
 import { eq, inArray } from "drizzle-orm"
 import { z } from "zod"
 
 // PUT /api/projects/:id - Update a project (no file upload)
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     await authenticateToken(req.headers)
     const formData = await req.formData()
 
@@ -55,12 +56,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const [currentProject] = await db
       .select()
       .from(projects)
-      .where(eq(projects.id, parseInt(params.id)))
+      .where(eq(projects.id, parseInt(id)))
     if (!currentProject) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 })
     }
 
-    const updateData: any = {
+    const updateData: Partial<Project> = {
       title,
       slug,
       isLatest,
@@ -72,11 +73,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const [project] = await db
       .update(projects)
       .set(updateData)
-      .where(eq(projects.id, parseInt(params.id)))
+      .where(eq(projects.id, parseInt(id)))
       .returning()
 
     // Remove existing categories
-    await db.delete(projectCategories).where(eq(projectCategories.projectId, parseInt(params.id)))
+    await db.delete(projectCategories).where(eq(projectCategories.projectId, parseInt(id)))
 
     if (categoryTitles.length > 0) {
       const existingCategories = await db
@@ -107,10 +108,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE /api/projects/:id - Delete a project (no file deletion)
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
     await authenticateToken(req.headers)
-    const id = params.id
 
     // Delete associated categories first
     await db.delete(projectCategories).where(eq(projectCategories.projectId, parseInt(id)))

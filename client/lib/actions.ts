@@ -17,8 +17,9 @@ import {
   testimonialListResponseSchema,
   testimonialSchema,
 } from "./schemas"
+import { ZodError } from "zod"
 
-const handleApiError = (error: any, operation: string): ErrorResponse => {
+const handleApiError = (error: unknown, operation: string): ErrorResponse => {
   console.error(`Error in ${operation}:`, error)
 
   // Handle API response errors
@@ -32,7 +33,7 @@ const handleApiError = (error: any, operation: string): ErrorResponse => {
   }
 
   // Handle Zod validation errors
-  if (error.name === "ZodError") {
+  if (error instanceof ZodError) {
     return errorResponseSchema.parse({
       success: false,
       error: `Invalid response format for ${operation}`,
@@ -42,7 +43,7 @@ const handleApiError = (error: any, operation: string): ErrorResponse => {
   }
 
   // Handle authentication errors
-  if (error.message === "Authentication required") {
+  if (error instanceof Error && error.message === "Authentication required") {
     return errorResponseSchema.parse({
       success: false,
       error: "Authentication required",
@@ -56,7 +57,7 @@ const handleApiError = (error: any, operation: string): ErrorResponse => {
     success: false,
     error: `Failed to ${operation}`,
     status: 500,
-    details: error.message || "An unexpected error occurred",
+    details: (error as Error).message || "An unexpected error occurred",
   })
 }
 

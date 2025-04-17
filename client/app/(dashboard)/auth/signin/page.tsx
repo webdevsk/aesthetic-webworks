@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { API_URLS } from "@/lib/api-urls"
 import { toast } from "sonner"
 
 export default function SignInPage() {
@@ -24,7 +25,7 @@ export default function SignInPage() {
     const password = formData.get("password")
 
     try {
-      const response = await fetch("/api/auth/signin", {
+      const response = await fetch(API_URLS.auth.signin, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +83,7 @@ export default function SignInPage() {
               {loading ? "Signing in..." : "Sign In"}
             </Button>
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/auth/signup" className="text-primary hover:underline">
                 Sign up
               </Link>

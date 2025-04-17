@@ -46,8 +46,8 @@ export function Footer() {
               </Link>
             </Card>
             <Card className="flex flex-col items-center gap-4">
-              <h3 className="variant-h3">Let's get started</h3>
-              <p>We’d love to hear about your project.</p>
+              <h3 className="variant-h3">Let&apos;s get started</h3>
+              <p>We&apos;d love to hear about your project.</p>
               <Button className="mt-6 w-full" size="sm">
                 Get in touch
               </Button>

@@ -2,6 +2,10 @@
 const BASE_URL = ""
 
 export const API_URLS = {
+  auth: {
+    signup: `${BASE_URL}/api/auth/signup`,
+    signin: `${BASE_URL}/api/auth/signin`,
+  },
   projects: {
     list: `${BASE_URL}/api/projects`,
     create: `${BASE_URL}/api/projects`,

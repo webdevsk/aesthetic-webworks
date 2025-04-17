@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/db"
 import { categories, projectCategories, projects } from "@/db/schema"
-import { authenticateToken } from "@/server/middleware/auth"
+import { authenticateToken } from "@/utils/authenticate-token"
 import { uploadToImgbb } from "@/utils/imgbb"
 import { eq, inArray } from "drizzle-orm"
 import { z } from "zod"

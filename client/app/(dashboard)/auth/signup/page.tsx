@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { API_URLS } from "@/lib/api-urls"
 import { toast } from "sonner"
 
 export default function SignUpPage() {
@@ -24,7 +25,7 @@ export default function SignUpPage() {
     const password = formData.get("password")
 
     try {
-      const response = await fetch("/api/auth/signup", {
+      const response = await fetch(API_URLS.auth.signup, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

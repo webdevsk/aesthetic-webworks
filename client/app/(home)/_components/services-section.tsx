@@ -13,7 +13,7 @@ export function ServicesSection() {
   return (
     <section className="container py-huge">
       <TextSlideUpByWord as="h2" className="variant-h2">
-        We’re good at
+        We&apos;re good at
       </TextSlideUpByWord>
       <div className="grid grid-cols-[1fr_50.75vw] items-end">
         <div>
@@ -45,11 +45,11 @@ export function ServicesSection() {
             variants={{ visible: { opacity: 1 }, hidden: { opacity: 0 } }}
             className="p-16">
             <h3 className="variant-h3">
-              Let's start with a conversation about how we can help you! Get in touch, we're a nice bunch.
+              Let&apos;s start with a conversation about how we can help you! Get in touch, we&apos;re a nice bunch.
             </h3>
             <div className="mt-8 flex items-center gap-4">
               <Button variant="ghost" className="py-4">
-                Let's talk
+                Let&apos;s talk
               </Button>
               <Badge size="lg" variant="outline" className="border-current py-4">
                 999999999

@@ -8,7 +8,7 @@ import { AnimatedLink } from "@/components/ui/animated-button"
 import { cn } from "@/lib/utils"
 import * as RadixDialog from "@radix-ui/react-dialog"
 import { BlockSlideUp } from "./higher-order-block-animate-components"
-import { TextFadeInByText, TextSlideUpByText } from "./higher-order-text-animate-components"
+import { TextFadeInByText } from "./higher-order-text-animate-components"
 import { X } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 
@@ -63,7 +63,7 @@ function getEnsureDialogContainer() {
 }
 
 function DialogContentCore(
-  { children, className, title, ...props }: RadixDialog.DialogContentProps,
+  { className, title, ...props }: RadixDialog.DialogContentProps,
   forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
   const isOpen = useContext(DialogOpenContext)

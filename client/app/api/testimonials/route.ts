@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/db"
 import { testimonials } from "@/db/schema"
-import { authenticateToken } from "@/server/middleware/auth"
+import { authenticateToken } from "@/utils/authenticate-token"
 import { uploadToImgbb } from "@/utils/imgbb"
 import { z } from "zod"
 
@@ -38,9 +38,9 @@ export async function POST(req: NextRequest) {
       content: z.string().min(1),
     })
     const raw = {
-      authorName: formData.get('authorName'),
-      authorCompany: formData.get('authorCompany'),
-      content: formData.get('content'),
+      authorName: formData.get("authorName"),
+      authorCompany: formData.get("authorCompany"),
+      content: formData.get("content"),
     }
     const parsed = TestimonialCreateSchema.safeParse(raw)
     if (!parsed.success) {
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     // Handle image upload
     let authorImage: string | undefined
-    const file = formData.get('authorImage') as File | null
+    const file = formData.get("authorImage") as File | null
     if (file) {
       const arrayBuffer = await file.arrayBuffer()
       const buffer = Buffer.from(arrayBuffer)

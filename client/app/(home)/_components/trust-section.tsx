@@ -29,7 +29,7 @@ export function TrustSection() {
                     </Avatar>
                   ))}
                 </div>
-                <h5 className="variant-h5 text-muted">Brands who've trusted us...</h5>
+                <h5 className="variant-h5 text-muted">Brands who&apos;ve trusted us...</h5>
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { API_URLS } from "@/lib/api-urls"
 
 interface Stats {
   projects: number
@@ -20,9 +21,9 @@ export default function AdminPage() {
     async function fetchStats() {
       try {
         const [projects, categories, testimonials] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/projects`).then((res) => res.json()),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`).then((res) => res.json()),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/testimonials`).then((res) => res.json()),
+          fetch(API_URLS.projects.list).then((res) => res.json()),
+          fetch(API_URLS.categories.list).then((res) => res.json()),
+          fetch(API_URLS.testimonials.list).then((res) => res.json()),
         ])
 
         setStats({

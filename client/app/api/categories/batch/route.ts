@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/db"
 import { categories } from "@/db/schema"
-import { authenticateToken } from "@/server/middleware/auth"
+import { authenticateToken } from "@/utils/authenticate-token"
 import { inArray } from "drizzle-orm"
 
 // POST /api/categories/batch - Create multiple categories
