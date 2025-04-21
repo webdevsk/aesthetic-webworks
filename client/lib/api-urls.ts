@@ -1,10 +1,17 @@
 // (If using separate backend) const BASE_URL = process.env.NEXT_PUBLIC_API_URL
-const BASE_URL = ""
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
+    ? "http://" + process.env.NEXT_PUBLIC_VERCEL_URL!
+    : "https://" + process.env.NEXT_PUBLIC_VERCEL_URL!
+// const BASE_URL = ""
+
+// Prepending BASE_URL as server actions cannot hit route handlers when the url doesnt have a hostname
+// This is unnecessary if we don't use server actions at all
 
 export const API_URLS = {
   auth: {
-    signup: `${BASE_URL}/api/auth/signup`,
-    signin: `${BASE_URL}/api/auth/signin`,
+    signup: `/api/auth/signup`,
+    signin: `/api/auth/signin`,
   },
   projects: {
     list: `${BASE_URL}/api/projects`,

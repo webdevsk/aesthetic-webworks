@@ -20,13 +20,16 @@ export async function PUT(
     // Extract and validate fields using zod
     const ProjectUpdateSchema = z.object({
       title: z.string().min(1),
-      isLatest: z.union([z.string(), z.boolean()]).transform((val) => val === "true" || val === true),
+      isLatest: z
+        .string()
+        .optional()
+        .transform((val) => !!val && val === "true"),
       categories: z.string().optional(), // Will be parsed as JSON or comma-separated
     })
 
     const raw = {
       title: formData.get("title"),
-      isLatest: formData.get("isLatest"),
+      isLatest: formData.get("isLatest") || undefined,
       categories: formData.get("categories") || undefined,
     }
     const parsed = ProjectUpdateSchema.safeParse(raw)

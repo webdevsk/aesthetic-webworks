@@ -17,8 +17,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
-import { createTestimonial, deleteTestimonial, getTestimonials, updateTestimonial } from "@/lib/actions"
 import type { Testimonial } from "@/lib/schemas"
+import { createTestimonial, deleteTestimonial, updateTestimonial } from "@/lib/server-actions"
+import { getTestimonials } from "@/lib/server-fetches"
 import { cn } from "@/lib/utils"
 import { Edit, Plus, Trash2 } from "lucide-react"
 import { X } from "lucide-react"
@@ -42,7 +43,7 @@ export default function TestimonialsPage() {
       async () => {
         const result = await getTestimonials()
         if ("error" in result) {
-          throw new Error(result.error)
+          throw new Error(result.error.message)
         }
         setTestimonials(result.data)
       },
@@ -83,7 +84,7 @@ export default function TestimonialsPage() {
         : await createTestimonial(formData)
 
       if ("error" in result) {
-        toast.error(result.error)
+        toast.error(result.error.message)
         return
       }
 
@@ -103,7 +104,7 @@ export default function TestimonialsPage() {
     try {
       const result = await deleteTestimonial(Number(testimonial.id))
       if ("error" in result) {
-        toast.error(result.error)
+        toast.error(result.error.message)
         return
       }
 

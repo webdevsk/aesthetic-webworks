@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { API_URLS } from "@/lib/api-urls"
+import { getCategories, getProjects, getTestimonials } from "@/lib/server-fetches"
 
 interface Stats {
   projects: number
@@ -20,22 +21,24 @@ export default function AdminPage() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const [projects, categories, testimonials] = await Promise.all([
-          fetch(API_URLS.projects.list).then((res) => res.json()),
-          fetch(API_URLS.categories.list).then((res) => res.json()),
-          fetch(API_URLS.testimonials.list).then((res) => res.json()),
+        const [projectsRes, categoriesRes, testimonialsRes] = await Promise.all([
+          getProjects(),
+          getCategories(),
+          getTestimonials(),
         ])
 
+        if (!projectsRes.success || !categoriesRes.success || !testimonialsRes.success) {
+          throw new Error("Failed to fetch stats")
+        }
         setStats({
-          projects: projects.length,
-          categories: categories.length,
-          testimonials: testimonials.length,
+          projects: projectsRes.data.length,
+          categories: categoriesRes.data.length,
+          testimonials: testimonialsRes.data.length,
         })
       } catch (error) {
         console.error("Failed to fetch stats:", error)
       }
     }
-
     fetchStats()
   }, [])
 

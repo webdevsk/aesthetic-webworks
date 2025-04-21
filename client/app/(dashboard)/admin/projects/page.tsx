@@ -17,8 +17,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { MultiCombobox } from "@/components/ui/multi-combobox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { createCategory, createProject, deleteProject, getCategories, getProjects, updateProject } from "@/lib/actions"
 import type { Category, Project } from "@/lib/schemas"
+import { createCategory, createProject, deleteProject, updateProject } from "@/lib/server-actions"
+import { getCategories } from "@/lib/server-fetches"
+import { getProjects } from "@/lib/server-fetches"
 import { cn } from "@/lib/utils"
 import { Edit, Plus, Trash2, X } from "lucide-react"
 import { toast } from "sonner"
@@ -50,7 +52,7 @@ export default function ProjectsPage() {
   async function fetchCategories() {
     const result = await getCategories()
     if ("error" in result) {
-      toast.error(result.error)
+      toast.error(result.error.message)
       return
     }
     setCategories(result.data)
@@ -61,7 +63,7 @@ export default function ProjectsPage() {
       async () => {
         const result = await getProjects()
         if ("error" in result) {
-          throw new Error(result.error)
+          throw new Error(result.error.message)
         }
         setProjects(result.data)
       },
@@ -122,8 +124,7 @@ export default function ProjectsPage() {
         : await createProject(formData)
 
       if ("error" in result) {
-        toast.error(result.error)
-        return
+        throw new Error(result.error.message)
       }
 
       setIsOpen(false)
@@ -133,7 +134,8 @@ export default function ProjectsPage() {
       fetchProjects()
       fetchCategories()
     } catch (error) {
-      toast.error("Failed to save project")
+      console.error(error)
+      toast.error(selectedProject ? "Failed to update project" : "Failed to save project")
     } finally {
       setIsLoading(false)
     }
@@ -144,7 +146,7 @@ export default function ProjectsPage() {
     try {
       const result = await deleteProject(Number(project.id))
       if ("error" in result) {
-        toast.error(result.error)
+        toast.error(result.error.message)
         return
       }
 

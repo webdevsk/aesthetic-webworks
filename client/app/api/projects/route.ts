@@ -62,17 +62,20 @@ export async function POST(req: NextRequest): Promise<NextResponse<RouteApiType<
   try {
     await authenticateToken(req.headers)
     const formData = await req.formData()
-
+    console.log(Object.fromEntries(formData))
     // Extract and validate fields using zod
     const ProjectCreateSchema = z.object({
       title: z.string().min(1),
-      isLatest: z.string().transform((val) => val === "true"),
+      isLatest: z
+        .string()
+        .optional()
+        .transform((val) => !!val && val === "true"),
       categories: z.string().optional(),
     })
 
     const raw = {
       title: formData.get("title"),
-      isLatest: formData.get("isLatest"),
+      isLatest: formData.get("isLatest") || undefined,
       categories: formData.get("categories") || undefined,
     }
     const parsed = ProjectCreateSchema.safeParse(raw)
