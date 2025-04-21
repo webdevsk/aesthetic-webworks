@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/db"
 import { testimonials } from "@/db/schema"
+import type { RouteApiType } from "@/types/api"
 import { authenticateToken } from "@/utils/authenticate-token"
 import { uploadToImgbb } from "@/utils/imgbb"
+import { DatabaseError } from "@neondatabase/serverless"
 import { z } from "zod"
 
+type FormattedTestimonial = {
+  id: string
+  author: {
+    name: string
+    company: string | null
+    image: string | null
+  }
+  content: string
+}
 // GET /api/testimonials - List all testimonials
-export async function GET() {
+export async function GET(): Promise<NextResponse<RouteApiType<FormattedTestimonial[]>>> {
   try {
     const result = await db.select().from(testimonials)
     const formattedResult = result.map((testimonial) => ({
@@ -18,15 +29,20 @@ export async function GET() {
       },
       content: testimonial.content,
     }))
-    return NextResponse.json(formattedResult)
+    return NextResponse.json({ success: true, data: formattedResult })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Failed to fetch testimonials" }, { status: 500 })
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to fetch testimonials" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to fetch testimonials" } })
+    }
   }
 }
 
 // POST /api/testimonials - Create a new testimonial (with image upload)
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse<RouteApiType<FormattedTestimonial>>> {
   try {
     await authenticateToken(req.headers)
     const formData = await req.formData()
@@ -44,7 +60,7 @@ export async function POST(req: NextRequest) {
     }
     const parsed = TestimonialCreateSchema.safeParse(raw)
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+      return NextResponse.json({ success: false, error: { message: JSON.stringify(parsed.error.flatten()) } })
     }
     const { authorName, authorCompany, content } = parsed.data
 
@@ -71,9 +87,14 @@ export async function POST(req: NextRequest) {
       },
       content: testimonial.content,
     }
-    return NextResponse.json(formattedTestimonial)
+    return NextResponse.json({ success: true, data: formattedTestimonial })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Failed to create testimonial" }, { status: 500 })
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to create testimonial" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to create testimonial" } })
+    }
   }
 }

@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/db"
-import { categories } from "@/db/schema"
+import { Category, categories } from "@/db/schema"
+import type { RouteApiType } from "@/types/api"
 import { authenticateToken } from "@/utils/authenticate-token"
+import { DatabaseError } from "@neondatabase/serverless"
 import { inArray } from "drizzle-orm"
 
 // POST /api/categories/batch - Create multiple categories
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse<RouteApiType<Category[]>>> {
   try {
     await authenticateToken(req.headers)
     const { titles } = await req.json()
     if (!Array.isArray(titles)) {
-      return NextResponse.json({ error: "titles must be an array" }, { status: 400 })
+      return NextResponse.json({ success: false, error: { message: "titles must be an array" } })
     }
 
     // Filter out duplicates
@@ -27,7 +29,7 @@ export async function POST(req: NextRequest) {
     const newTitles = uniqueTitles.filter((title) => !existingTitles.has(title))
 
     if (newTitles.length === 0) {
-      return NextResponse.json({ message: "No new categories to create" }, { status: 200 })
+      return NextResponse.json({ success: true, data: [] })
     }
 
     // Create all new categories in a single query
@@ -41,9 +43,14 @@ export async function POST(req: NextRequest) {
       )
       .returning()
 
-    return NextResponse.json(newCategories, { status: 201 })
+    return NextResponse.json({ success: true, data: newCategories })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Failed to create categories" }, { status: 500 })
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to create categories" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to create categories" } })
+    }
   }
 }

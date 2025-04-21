@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server"
 import { db } from "@/db"
 import { users } from "@/db/schema"
+import type { RouteApiType } from "@/types/api"
+import { DatabaseError } from "@neondatabase/serverless"
 import bcrypt from "bcryptjs"
 import { eq } from "drizzle-orm"
 import jwt from "jsonwebtoken"
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse<RouteApiType<{ token: string }>>> {
   try {
     const body = await request.json()
     const { username, password } = body
@@ -13,24 +15,20 @@ export async function POST(request: Request) {
     // Find user
     const [user] = await db.select().from(users).where(eq(users.username, username))
     if (!user) {
-      return NextResponse.json({ error: "Please sign up first" }, { status: 401 })
+      return NextResponse.json({ success: false, error: { message: "Please sign up first" } })
     }
 
     // Check password
     const validPassword = await bcrypt.compare(password, user.password)
     if (!validPassword) {
-      return NextResponse.json({ error: "Incorrect Password" }, { status: 401 })
+      return NextResponse.json({ success: false, error: { message: "Incorrect Password" } })
     }
 
     // Generate token
     const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET!)
 
-    // Create response with cookie
-    const response = new NextResponse(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    })
-
+    // Set cookie
+    const response = NextResponse.json({ success: true, data: { token } })
     response.cookies.set({
       name: "token",
       value: token,
@@ -39,14 +37,19 @@ export async function POST(request: Request) {
       sameSite: "lax",
       path: "/",
     })
-
-    return response
+    return response as NextResponse<RouteApiType<{ token: string }>>
   } catch (error) {
-    return NextResponse.json({ error: "An error occurred during sign in" }, { status: 500 })
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to sign in" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to sign in" } })
+    }
   }
 }
 
-// export async function POST(request: Request) {
+// export async function POST(request: Request): Promise<NextResponse<RouteApiType<{ token: string }>>> {
 //   try {
 //     const body = await request.json()
 //     const { username, password } = body
@@ -60,17 +63,13 @@ export async function POST(request: Request) {
 //     })
 
 //     if (!apiResponse.ok) {
-//       return NextResponse.json({ error: "Invalid credentials" }, { status: apiResponse.status })
+//       return NextResponse.json({ success: false, error: { message: "Invalid credentials" } })
 //     }
 
 //     const data = await apiResponse.json()
 
-//     // Create response with cookie
-//     const response = new NextResponse(JSON.stringify({ success: true }), {
-//       status: 200,
-//       headers: { "Content-Type": "application/json" },
-//     })
-
+//     // Set cookie
+//     const response = NextResponse.json({ success: true, data: { token: data.token } })
 //     response.cookies.set({
 //       name: "token",
 //       value: data.token,
@@ -79,9 +78,8 @@ export async function POST(request: Request) {
 //       sameSite: "lax",
 //       path: "/",
 //     })
-
 //     return response
 //   } catch (error) {
-//     return NextResponse.json({ error: "An error occurred during sign in" }, { status: 500 })
+//     return NextResponse.json({ success: false, error: { message: "An error occurred during sign in" } })
 //   }
 // }

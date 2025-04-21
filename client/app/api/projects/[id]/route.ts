@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/db"
 import { Project, categories, projectCategories, projects } from "@/db/schema"
+import type { RouteApiType } from "@/types/api"
 import { authenticateToken } from "@/utils/authenticate-token"
 import { uploadToImgbb } from "@/utils/imgbb"
+import { DatabaseError } from "@neondatabase/serverless"
 import { eq, inArray } from "drizzle-orm"
 import { z } from "zod"
 
-// PUT /api/projects/:id - Update a project (no file upload)
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse<RouteApiType<Project>>> {
   try {
     const { id } = await params
     await authenticateToken(req.headers)
@@ -27,7 +31,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
     const parsed = ProjectUpdateSchema.safeParse(raw)
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+      return NextResponse.json({ success: false, error: { message: JSON.stringify(parsed.error.flatten()) } })
     }
     const { title, isLatest, categories: categoryTitlesRaw } = parsed.data
 
@@ -58,7 +62,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       .from(projects)
       .where(eq(projects.id, parseInt(id)))
     if (!currentProject) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 })
+      return NextResponse.json({ success: false, error: { message: "Project not found" } })
     }
 
     const updateData: Partial<Project> = {
@@ -100,15 +104,23 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       }
     }
 
-    return NextResponse.json(project)
+    return NextResponse.json({ success: true, data: project })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Failed to update project" }, { status: 500 })
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to update project" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to update project" } })
+    }
   }
 }
 
 // DELETE /api/projects/:id - Delete a project (no file deletion)
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse<RouteApiType<null>>> {
   try {
     const { id } = await params
     await authenticateToken(req.headers)
@@ -119,9 +131,14 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     // Delete the project
     await db.delete(projects).where(eq(projects.id, parseInt(id)))
 
-    return new Response(null, { status: 204 })
+    return NextResponse.json({ success: true, data: null })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Failed to delete project" }, { status: 500 })
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to delete project" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to delete project" } })
+    }
   }
 }

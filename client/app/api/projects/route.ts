@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/db"
 import { categories, projectCategories, projects } from "@/db/schema"
+import type { Project } from "@/db/schema"
+import type { RouteApiType } from "@/types/api"
 import { authenticateToken } from "@/utils/authenticate-token"
 import { uploadToImgbb } from "@/utils/imgbb"
+import { DatabaseError } from "@neondatabase/serverless"
 import { eq, inArray } from "drizzle-orm"
 import { z } from "zod"
 
 // GET /api/projects - List all projects with categories
-export async function GET() {
+export async function GET(): Promise<NextResponse<RouteApiType<Array<Project & { categories: string[] }>>>> {
   try {
     const projectsList = await db.select().from(projects)
     const projectIds = projectsList.map((p) => p.id)
@@ -42,15 +45,20 @@ export async function GET() {
       categories: categoriesByProject[project.id] || [],
     }))
 
-    return NextResponse.json(result)
+    return NextResponse.json({ success: true, data: result })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Failed to fetch projects" }, { status: 500 })
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to fetch projects" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to fetch projects" } })
+    }
   }
 }
 
 // POST /api/projects - Create a new project (with file upload)
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse<RouteApiType<Project>>> {
   try {
     await authenticateToken(req.headers)
     const formData = await req.formData()
@@ -69,7 +77,9 @@ export async function POST(req: NextRequest) {
     }
     const parsed = ProjectCreateSchema.safeParse(raw)
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+      // Flatten the error into a string for RouteApiType
+      const message = JSON.stringify(parsed.error.flatten())
+      return NextResponse.json({ success: false, error: { message } })
     }
     const { title, isLatest, categories: categoryTitlesRaw } = parsed.data
 
@@ -131,9 +141,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json(project)
+    return NextResponse.json({ success: true, data: project })
   } catch (error) {
     console.error(error)
-    return NextResponse.json({ error: "Failed to create project" }, { status: 500 })
+    return NextResponse.json({ success: false, error: { message: "Failed to create project" } })
   }
 }

@@ -1,22 +1,29 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/db"
-import { categories } from "@/db/schema"
+import { Category, categories } from "@/db/schema"
+import { RouteApiType } from "@/types/api"
 import { authenticateToken } from "@/utils/authenticate-token"
+import { DatabaseError } from "@neondatabase/serverless"
 import { eq } from "drizzle-orm"
 
 // GET /api/categories - Get all categories
-export async function GET() {
+export async function GET(): Promise<NextResponse<RouteApiType<Category[]>>> {
   try {
     const result = await db.select().from(categories)
-    return NextResponse.json(result)
+    return NextResponse.json({ success: true, data: result })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Failed to fetch categories" }, { status: 500 })
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to fetch categories" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to fetch categories" } })
+    }
   }
 }
 
 // POST /api/categories - Create a new category
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse<RouteApiType<Category>>> {
   try {
     await authenticateToken(req.headers)
     const { title } = await req.json()
@@ -30,13 +37,18 @@ export async function POST(req: NextRequest) {
       .limit(1)
 
     if (existingCategory.length > 0) {
-      return NextResponse.json({ error: "Category already exists" }, { status: 400 })
+      return NextResponse.json({ success: false, error: { message: "Category already exists" } })
     }
 
     const [category] = await db.insert(categories).values({ title, slug }).returning()
-    return NextResponse.json(category, { status: 201 })
+    return NextResponse.json({ success: true, data: category })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Failed to create category" }, { status: 500 })
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to create category" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to create category" } })
+    }
   }
 }

@@ -1,13 +1,27 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/db"
 import { Testimonial, testimonials } from "@/db/schema"
+import type { RouteApiType } from "@/types/api"
 import { authenticateToken } from "@/utils/authenticate-token"
 import { uploadToImgbb } from "@/utils/imgbb"
+import { DatabaseError } from "@neondatabase/serverless"
 import { eq } from "drizzle-orm"
 import { z } from "zod"
 
-// PUT /api/testimonials/:id - Update a testimonial (no file upload)
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+type FormattedTestimonial = {
+  id: string
+  author: {
+    name: string
+    company: string | null
+    image: string | null
+  }
+  content: string
+}
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse<RouteApiType<FormattedTestimonial>>> {
   try {
     const { id } = await params
     await authenticateToken(req.headers)
@@ -26,7 +40,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
     const parsed = TestimonialUpdateSchema.safeParse(raw)
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+      console.error(parsed.error.flatten())
+      return NextResponse.json({
+        success: false,
+        error: {
+          message: JSON.stringify(parsed.error.flatten()),
+        },
+      })
     }
     const { authorName, authorCompany, content } = parsed.data
 
@@ -45,7 +65,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       .from(testimonials)
       .where(eq(testimonials.id, parseInt(id)))
     if (!currentTestimonial) {
-      return NextResponse.json({ error: "Testimonial not found" }, { status: 404 })
+      return NextResponse.json({ success: false, error: { message: "Testimonial not found" } })
     }
     const updateData: Partial<Testimonial> = { authorName, authorCompany, content }
     if (authorImage) {
@@ -65,15 +85,23 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       },
       content: testimonial.content,
     }
-    return NextResponse.json(formattedTestimonial)
+    return NextResponse.json({ success: true, data: formattedTestimonial })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Failed to update testimonial" }, { status: 500 })
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to update testimonial" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to update testimonial" } })
+    }
   }
 }
 
 // DELETE /api/testimonials/:id - Delete a testimonial (no file deletion)
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse<RouteApiType<null>>> {
   try {
     const { id } = await params
     await authenticateToken(req.headers)
@@ -82,11 +110,16 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       .where(eq(testimonials.id, parseInt(id)))
       .returning()
     if (!deletedTestimonial) {
-      return NextResponse.json({ error: "Testimonial not found" }, { status: 404 })
+      return NextResponse.json({ success: false, error: { message: "Testimonial not found" } })
     }
-    return new Response(null, { status: 204 })
+    return NextResponse.json({ success: true, data: null })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Failed to delete testimonial" }, { status: 500 })
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to delete testimonial" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to delete testimonial" } })
+    }
   }
 }

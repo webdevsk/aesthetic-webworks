@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/db"
-import { categories } from "@/db/schema"
+import { Category, categories } from "@/db/schema"
+import { RouteApiType } from "@/types/api"
 import { authenticateToken } from "@/utils/authenticate-token"
 import { DatabaseError } from "@neondatabase/serverless"
 import { eq } from "drizzle-orm"
 
 // PUT /api/categories/:id - Update a category
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse<RouteApiType<Category>>> {
   try {
     const { id } = await params
     await authenticateToken(req.headers)
@@ -21,7 +25,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       .limit(1)
 
     if (existingCategory.length > 0 && existingCategory[0].id !== parseInt(id)) {
-      return NextResponse.json({ error: "Category with this title already exists" }, { status: 400 })
+      return NextResponse.json({ success: false, error: { message: "Category with this title already exists" } })
     }
 
     const [category] = await db
@@ -31,18 +35,26 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       .returning()
 
     if (!category) {
-      return NextResponse.json({ error: "Category not found" }, { status: 404 })
+      return NextResponse.json({ success: false, error: { message: "Category not found" } })
     }
 
-    return NextResponse.json(category)
+    return NextResponse.json({ success: true, data: category })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Failed to update category" }, { status: 500 })
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to update category" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to update category" } })
+    }
   }
 }
 
 // DELETE /api/categories/:id - Delete a category
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse<RouteApiType<null>>> {
   try {
     const { id } = await params
     await authenticateToken(req.headers)
@@ -53,26 +65,27 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       .returning()
 
     if (!deletedCategory) {
-      return NextResponse.json({ error: "Category not found" }, { status: 404 })
+      return NextResponse.json({ success: false, error: { message: "Category not found" } })
     }
 
-    return new Response(null, { status: 204 })
+    return NextResponse.json({ success: true, data: null })
   } catch (error) {
-    // if (!(error instanceof Error)) return
-    console.error(error)
-    if (
-      error instanceof DatabaseError &&
-      error.code === "23503" &&
-      error.constraint === "project_categories_category_id_categories_id_fk"
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            "Cannot delete this category as it is being used by one or more projects. Please remove it from all projects first.",
-        },
-        { status: 400 }
-      )
+    if (error instanceof DatabaseError) {
+      console.error(error.message)
+      if (error.code === "23503" && error.constraint === "project_categories_category_id_categories_id_fk") {
+        return NextResponse.json({
+          success: false,
+          error: {
+            code: error.code,
+            message:
+              "Cannot delete this category as it is being used by one or more projects. Please remove it from all projects first.",
+          },
+        })
+      }
+      return NextResponse.json({ success: false, error: { code: error.code, message: "Failed to delete category" } })
+    } else {
+      console.error(error)
+      return NextResponse.json({ success: false, error: { message: "Failed to delete category" } })
     }
-    return NextResponse.json({ error: "Failed to delete category" }, { status: 500 })
   }
 }
