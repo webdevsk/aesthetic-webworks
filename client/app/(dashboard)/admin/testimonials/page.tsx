@@ -17,9 +17,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
-import { createTestimonial, deleteTestimonial, updateTestimonial } from "@/lib/actions"
-import { getTestimonials } from "@/lib/actions"
-import type { Testimonial } from "@/lib/schemas"
+import type { Testimonial } from "@/db/schema"
+import { createTestimonial, deleteTestimonial, getTestimonials, updateTestimonial } from "@/lib/actions"
 import { cn } from "@/lib/utils"
 import { Edit, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
@@ -60,7 +59,7 @@ export default function TestimonialsPage() {
     const formData = new FormData(e.currentTarget)
     const imageFile = formData.get("authorImage") as File
 
-    if ((keepExistingImage && selectedTestimonial?.author.image) || !imageFile || imageFile.size === 0) {
+    if ((keepExistingImage && selectedTestimonial?.authorImage) || !imageFile || imageFile.size === 0) {
       formData.delete("authorImage")
     } else if (imageFile && imageFile.size > 0) {
       if (imageFile.size > 1024 * 1024) {
@@ -122,7 +121,7 @@ export default function TestimonialsPage() {
 
   useEffect(() => {
     if (isOpen) {
-      setKeepExistingImage(!!selectedTestimonial?.author.image)
+      setKeepExistingImage(!!selectedTestimonial?.authorImage)
     }
   }, [isOpen, selectedTestimonial])
 
@@ -152,8 +151,8 @@ export default function TestimonialsPage() {
         <TableBody>
           {testimonials.map((testimonial) => (
             <TableRow key={testimonial.id}>
-              <TableCell>{testimonial.author.name}</TableCell>
-              <TableCell>{testimonial.author.company || "-"}</TableCell>
+              <TableCell>{testimonial.authorName}</TableCell>
+              <TableCell>{testimonial.authorCompany || "-"}</TableCell>
               <TableCell className="max-w-md truncate">{testimonial.content}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
@@ -195,28 +194,28 @@ export default function TestimonialsPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="authorName">Author Name</Label>
-              <Input id="authorName" name="authorName" defaultValue={selectedTestimonial?.author.name} required />
+              <Input id="authorName" name="authorName" defaultValue={selectedTestimonial?.authorName} required />
             </div>
             <div>
               <Label htmlFor="authorCompany">Company</Label>
-              <Input id="authorCompany" name="authorCompany" defaultValue={selectedTestimonial?.author.company || ""} />
+              <Input id="authorCompany" name="authorCompany" defaultValue={selectedTestimonial?.authorCompany || ""} />
             </div>
             <div>
               <Label htmlFor="authorImage">Author Image</Label>
               <div className="space-y-4">
-                {selectedTestimonial?.author.image && (
+                {selectedTestimonial?.authorImage && (
                   <div className="flex items-center gap-4">
                     <div className="relative h-20 w-20 shrink-0">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={selectedTestimonial.author.image}
+                        src={selectedTestimonial.authorImage}
                         alt="Current author image"
                         className="h-full w-full rounded-md object-cover"
                       />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium">
-                        Current image: {selectedTestimonial.author.image.split("/").pop()}
+                        Current image: {selectedTestimonial.authorImage.split("/").pop()}
                       </p>
                       <div className="mt-2 flex items-center gap-2">
                         <input
@@ -237,15 +236,14 @@ export default function TestimonialsPage() {
                     </div>
                   </div>
                 )}
-                <div
-                  className={cn("space-y-2", keepExistingImage && selectedTestimonial?.author.image && "opacity-50")}>
+                <div className={cn("space-y-2", keepExistingImage && selectedTestimonial?.authorImage && "opacity-50")}>
                   <Input
                     id="authorImage"
                     name="authorImage"
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
                     ref={fileInputRef}
-                    disabled={keepExistingImage && !!selectedTestimonial?.author.image}
+                    disabled={keepExistingImage && !!selectedTestimonial?.authorImage}
                     onChange={(e) => {
                       if (e.target.files?.[0]) {
                         if (e.target.files[0].size > 1024 * 1024) {

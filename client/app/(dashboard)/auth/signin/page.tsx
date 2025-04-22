@@ -88,6 +88,12 @@ export default function SignInPage() {
                 Sign up
               </Link>
             </p>
+            <p className="text-sm text-muted-foreground">
+              Back to Landing Page?{" "}
+              <Link href="/" className="text-primary hover:underline">
+                Home
+              </Link>
+            </p>
           </CardFooter>
         </form>
       </Card>

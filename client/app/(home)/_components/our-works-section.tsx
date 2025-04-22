@@ -6,55 +6,53 @@ import { HorizontalScrollTrigger } from "@/components/horizontal-scroll-trigger"
 import { AnimatedLink } from "@/components/ui/animated-button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { Project } from "@/lib/schemas"
+import { ProjectWithCategories } from "@/db/schema"
 import { motion, useInView } from "motion/react"
 
-export const OurWorksSection = ({ projects }: { projects: Project[] }) => {
+export const OurWorksSection = ({ projects }: { projects: ProjectWithCategories[] }) => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true })
-  return !!projects.length &&  (
-    <HorizontalScrollTrigger>
-      <div className="flex h-dvh items-center py-[7.5vw]">
-        <div ref={ref} className="flex flex-nowrap space-x-[2.5vw] px-[5.625rem]">
-          <Heading />
-          {projects.map((project, index) => (
-            <motion.a
-              href={`/projects/${project.id}`}
-              className=""
-              key={project.id}
-              initial={{ opacity: 0, x: 100 }}
-              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
-              transition={{ duration: 0.5, delay: index * 0.2 }}>
-              <Card className="relative aspect-[1.25] min-w-[43.125vw] overflow-hidden bg-transparent text-primary-foreground ring-0 ring-primary transition-shadow duration-300 hover:ring-4">
-                <Image
-                  src={
-                    project.image
-                      ? project.image
-                      : "/project-placeholder-image.jpg"
-                  }
-                  alt={project.title}
-                  fill
-                  className="inset-0 -z-10 object-cover"
-                  priority={index === 0}
-                />
-                <div className="flex size-full flex-col gap-4">
-                  <div className="self-end">{project.isLatest && <Badge>Latest</Badge>}</div>
-                  <h2 className="variant-h2 mt-auto">{project.title}</h2>
-                  <div className="flex flex-wrap gap-4">
-                    {project.categories?.map((category) => (
-                      <Badge key={category} variant="outline">
-                        {category}
-                      </Badge>
-                    ))}
+  return (
+    !!projects.length && (
+      <HorizontalScrollTrigger>
+        <div className="flex h-dvh items-center py-[7.5vw]">
+          <div ref={ref} className="flex flex-nowrap space-x-[2.5vw] px-[5.625rem]">
+            <Heading />
+            {projects.map((project, index) => (
+              <motion.a
+                href={`/projects/${project.id}`}
+                className=""
+                key={project.id}
+                initial={{ opacity: 0, x: 100 }}
+                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
+                transition={{ duration: 0.5, delay: index * 0.2 }}>
+                <Card className="relative aspect-[1.25] min-w-[43.125vw] overflow-hidden bg-transparent text-primary-foreground ring-0 ring-primary transition-shadow duration-300 hover:ring-4">
+                  <Image
+                    src={project.image ? project.image : "/project-placeholder-image.jpg"}
+                    alt={project.title}
+                    fill
+                    className="inset-0 -z-10 object-cover"
+                    priority={index === 0}
+                  />
+                  <div className="flex size-full flex-col gap-4">
+                    <div className="self-end">{project.isLatest && <Badge>Latest</Badge>}</div>
+                    <h2 className="variant-h2 mt-auto">{project.title}</h2>
+                    <div className="flex flex-wrap gap-4">
+                      {project.categories?.map((category) => (
+                        <Badge key={category} variant="outline">
+                          {category}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </Card>
-            </motion.a>
-          ))}
-          <Ending />
+                </Card>
+              </motion.a>
+            ))}
+            <Ending />
+          </div>
         </div>
-      </div>
-    </HorizontalScrollTrigger>
+      </HorizontalScrollTrigger>
+    )
   )
 }
 

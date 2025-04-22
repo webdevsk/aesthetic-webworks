@@ -1,7 +1,7 @@
 "use client"
 
 import { BlockSlideUp } from "@/components/higher-order-block-animate-components"
-import { TextSlideUpByLine, TextSlideUpByWord } from "@/components/higher-order-text-animate-components"
+import { TextSlideUpByWord } from "@/components/higher-order-text-animate-components"
 import { AnimatedLink } from "@/components/ui/animated-button"
 import { AchievementsBadge } from "./achievements-badge"
 

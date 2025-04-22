@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import { TextSlideUpByText, TextSlideUpByWord } from "@/components/higher-order-text-animate-components"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Testimonial } from "@/lib/schemas"
+import { Testimonial } from "@/db/schema"
 import { LoaderCircle } from "lucide-react"
 import { MotionValue, motion, useScroll } from "motion/react"
 
@@ -68,7 +68,7 @@ function Heading() {
   )
 }
 
-function TestimonialComponent({ id, author: { name, company, image }, content }: Testimonial) {
+function TestimonialComponent({ id, authorName, authorCompany, authorImage, content }: Testimonial) {
   const target = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: target,
@@ -86,12 +86,12 @@ function TestimonialComponent({ id, author: { name, company, image }, content }:
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-8">
           <Avatar className="variant-h5">
-            <AvatarImage src={image ? image : undefined} />
-            <AvatarFallback>{name.charAt(0)}</AvatarFallback>
+            <AvatarImage src={authorImage ? authorImage : undefined} />
+            <AvatarFallback>{authorName.charAt(0)}</AvatarFallback>
           </Avatar>
-          <h5 className="variant-h5 text-muted">{name}</h5>
+          <h5 className="variant-h5 text-muted">{authorName}</h5>
         </div>
-        <h4 className="variant-h4 text-primary">{company}</h4>
+        <h4 className="variant-h4 text-primary">{authorCompany}</h4>
       </div>
     </motion.div>
   )

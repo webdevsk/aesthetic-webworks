@@ -1,9 +1,7 @@
 import { ParallaxImage } from "@/components/parallax-image"
 import { ScrollMarqeue } from "@/components/scroll-marqeue"
-import { projects } from "@/data/data"
-import { testimonials } from "@/data/data"
-import { getProjects } from "@/lib/actions"
-import { getTestimonials } from "@/lib/actions"
+import { listProjects } from "@/lib/projectOperations"
+import { listTestimonials } from "@/lib/testimonialOperations"
 import { AchievementsSection } from "./_components/achievements-section"
 import { EstablishedYearSection } from "./_components/establishedyear-section"
 import { HeroSection } from "./_components/hero-section"
@@ -15,22 +13,17 @@ import { TrustSection } from "./_components/trust-section"
 import { WhatWeDoSection } from "./_components/what-we-do-section"
 
 export const dynamic = "force-dynamic"
-const staticMode = process.env.NEXT_PUBLIC_STATIC && process.env.NEXT_PUBLIC_STATIC === "1"
+
 const Page = async () => {
-  const [projectsRes, testimonialsRes] = staticMode
-    ? [
-        { success: true, data: projects },
-        { success: true, data: testimonials },
-      ]
-    : await Promise.all([getProjects(), getTestimonials()])
+  const [projectsRes, testimonialsRes] = await Promise.all([listProjects(), listTestimonials()])
 
   if (!projectsRes.success) {
     console.error(projectsRes.error)
-    throw new Error(projectsRes.error)
+    throw new Error(projectsRes.error?.message)
   }
   if (!testimonialsRes.success) {
     console.error(testimonialsRes.error)
-    throw new Error(testimonialsRes.error)
+    throw new Error(testimonialsRes.error?.message)
   }
   return (
     <>

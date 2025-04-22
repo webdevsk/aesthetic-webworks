@@ -17,20 +17,20 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { MultiCombobox } from "@/components/ui/multi-combobox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import type { Category, Project, ProjectWithCategories } from "@/db/schema"
 import { createCategory, createProject, deleteProject, updateProject } from "@/lib/actions"
 import { getProjects } from "@/lib/actions"
 import { getCategories } from "@/lib/actions"
-import type { Category, Project } from "@/lib/schemas"
 import { cn } from "@/lib/utils"
 import { Edit, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<Project[]>([])
+  const [projects, setProjects] = useState<ProjectWithCategories[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [selectedProject, setSelectedProject] = useState<ProjectWithCategories | null>(null)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -319,7 +319,12 @@ export default function ProjectsPage() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <input type="checkbox" id="isLatest" name="isLatest" defaultChecked={selectedProject?.isLatest} />
+              <input
+                type="checkbox"
+                id="isLatest"
+                name="isLatest"
+                defaultChecked={selectedProject?.isLatest ?? false}
+              />
               <Label htmlFor="isLatest">Latest Project</Label>
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>

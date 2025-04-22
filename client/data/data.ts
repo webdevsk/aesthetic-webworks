@@ -1,6 +1,6 @@
-import { Category, Project, Testimonial } from "@/lib/schemas"
+import { Category, ProjectWithCategories, Testimonial } from "@/db/schema"
 
-export const projects: Project[] = [
+export const projects: ProjectWithCategories[] = [
   {
     title: "Romans & Partners",
     image: "", // Replace with actual image URL
@@ -38,7 +38,7 @@ export const projects: Project[] = [
   // categoryIds: project.categories.map(encodeURIComponent)
 }))
 
-export const categories: (Category & { topProject?: Project })[] = [
+export const categories: (Category & { topProject?: ProjectWithCategories })[] = [
   { title: "E-commerce" },
   { title: "Website Design" },
   { title: "Digital Products" },
@@ -55,52 +55,42 @@ export const categories: (Category & { topProject?: Project })[] = [
 
 export const testimonials: Testimonial[] = [
   {
-    id: "1",
-    author: {
-      name: "Steven Glibbery",
-      company: "TGA Mobility",
-      image: null,
-    },
+    id: 1,
+    authorName: "Steven Glibbery",
+    authorCompany: "TGA Mobility",
+    authorImage: null,
     content:
       "We have worked with Aesthetic Webworks to build a complete new website with quite complex connections with our CRM and accounting functions. The end product is brilliant, a really first class blend of design and functionality and the speed and depth of understanding about our business was remarkable. I&apos;d highly recommend them.",
   },
   {
-    id: "2",
-    author: {
-      name: "Jane Smith",
-      company: "Tech Solutions",
-      image: null,
-    },
+    id: 2,
+    authorName: "Jane Smith",
+    authorCompany: "Tech Solutions",
+    authorImage: null,
     content:
       "Working with the team has been an absolute pleasure. Their attention to detail and innovative approach to problem-solving has transformed our digital presence.",
   },
   {
-    id: "3",
-    author: {
-      name: "Michael Chen",
-      company: "E-Commerce Plus",
-      image: null,
-    },
+    id: 3,
+    authorName: "Michael Chen",
+    authorCompany: "E-Commerce Plus",
+    authorImage: null,
     content:
       "The e-commerce platform they built for us exceeded all expectations. Our conversion rates have increased by 45% since launch. Their expertise in both design and technical implementation is outstanding.",
   },
   {
-    id: "4",
-    author: {
-      name: "Sarah Williams",
-      company: "Brand Forward",
-      image: null,
-    },
+    id: 4,
+    authorName: "Sarah Williams",
+    authorCompany: "Brand Forward",
+    authorImage: null,
     content:
       "Their approach to brand identity development was refreshing. They took the time to truly understand our values and translated them into a cohesive digital presence that resonates with our target audience.",
   },
   {
-    id: "5",
-    author: {
-      name: "David Thompson",
-      company: "Property Partners",
-      image: null,
-    },
+    id: 5,
+    authorName: "David Thompson",
+    authorCompany: "Property Partners",
+    authorImage: null,
     content:
       "The property portal they developed for us streamlined our entire operation. The user interface is intuitive, and the backend integration with our existing systems was seamless. A truly professional team.",
   },

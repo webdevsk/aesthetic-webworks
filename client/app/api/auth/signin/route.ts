@@ -48,38 +48,3 @@ export async function POST(request: Request): Promise<NextResponse<RouteApiType<
     }
   }
 }
-
-// export async function POST(request: Request): Promise<NextResponse<RouteApiType<{ token: string }>>> {
-//   try {
-//     const body = await request.json()
-//     const { username, password } = body
-
-//     const apiResponse = await fetch(API_URLS.auth.signin, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({ username, password }),
-//     })
-
-//     if (!apiResponse.ok) {
-//       return NextResponse.json({ success: false, error: { message: "Invalid credentials" } })
-//     }
-
-//     const data = await apiResponse.json()
-
-//     // Set cookie
-//     const response = NextResponse.json({ success: true, data: { token: data.token } })
-//     response.cookies.set({
-//       name: "token",
-//       value: data.token,
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production",
-//       sameSite: "lax",
-//       path: "/",
-//     })
-//     return response
-//   } catch (error) {
-//     return NextResponse.json({ success: false, error: { message: "An error occurred during sign in" } })
-//   }
-// }

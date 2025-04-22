@@ -4,7 +4,7 @@ import Image from "next/image"
 import { TextSlideUpByLine, TextSlideUpByWord } from "@/components/higher-order-text-animate-components"
 import { Badge } from "@/components/ui/badge"
 import { categories } from "@/data/data"
-import { AnimatePresence, motion } from "motion/react"
+import { motion } from "motion/react"
 
 export function WhatWeDoSection() {
   return (

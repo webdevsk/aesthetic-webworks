@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { BASE_URL } from "./lib/api-urls"
 
 export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/admin/")) {
