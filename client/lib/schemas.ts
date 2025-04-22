@@ -1,4 +1,20 @@
-import { z } from "zod"
+import { ZodTypeAny, z } from "zod"
+
+// Generic function to create the RouteApiType schema for any data type
+export const apiSchema = <T extends ZodTypeAny>(dataSchema: T) =>
+  z.union([
+    z.object({
+      success: z.literal(true),
+      data: dataSchema,
+    }),
+    z.object({
+      success: z.literal(false),
+      error: z.object({
+        message: z.string(),
+        code: z.string().optional(),
+      }),
+    }),
+  ])
 
 // Category schemas
 export const categorySchema = z.object({
