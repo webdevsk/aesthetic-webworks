@@ -25,7 +25,7 @@ export async function GET(): Promise<NextResponse<RouteApiType<Category[]>>> {
 // POST /api/categories - Create a new category
 export async function POST(req: NextRequest): Promise<NextResponse<RouteApiType<Category>>> {
   try {
-    await authenticateToken(req.headers)
+    await authenticateToken()
     const { title } = await req.json()
     const slug = title.toLowerCase().replace(/\s+/g, "-")
 

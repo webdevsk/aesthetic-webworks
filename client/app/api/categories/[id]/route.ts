@@ -13,7 +13,7 @@ export async function PUT(
 ): Promise<NextResponse<RouteApiType<Category>>> {
   try {
     const { id } = await params
-    await authenticateToken(req.headers)
+    await authenticateToken()
     const { title } = await req.json()
     const slug = title.toLowerCase().replace(/\s+/g, "-")
 
@@ -57,7 +57,7 @@ export async function DELETE(
 ): Promise<NextResponse<RouteApiType<null>>> {
   try {
     const { id } = await params
-    await authenticateToken(req.headers)
+    await authenticateToken()
 
     const [deletedCategory] = await db
       .delete(categories)

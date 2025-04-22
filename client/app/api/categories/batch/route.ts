@@ -9,7 +9,7 @@ import { inArray } from "drizzle-orm"
 // POST /api/categories/batch - Create multiple categories
 export async function POST(req: NextRequest): Promise<NextResponse<RouteApiType<Category[]>>> {
   try {
-    await authenticateToken(req.headers)
+    await authenticateToken()
     const { titles } = await req.json()
     if (!Array.isArray(titles)) {
       return NextResponse.json({ success: false, error: { message: "titles must be an array" } })

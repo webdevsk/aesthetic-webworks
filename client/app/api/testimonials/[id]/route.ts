@@ -24,7 +24,7 @@ export async function PUT(
 ): Promise<NextResponse<RouteApiType<FormattedTestimonial>>> {
   try {
     const { id } = await params
-    await authenticateToken(req.headers)
+    await authenticateToken()
     const formData = await req.formData()
 
     // Validate fields with zod
@@ -104,7 +104,7 @@ export async function DELETE(
 ): Promise<NextResponse<RouteApiType<null>>> {
   try {
     const { id } = await params
-    await authenticateToken(req.headers)
+    await authenticateToken()
     const [deletedTestimonial] = await db
       .delete(testimonials)
       .where(eq(testimonials.id, parseInt(id)))

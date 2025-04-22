@@ -44,7 +44,7 @@ export async function GET(): Promise<NextResponse<RouteApiType<FormattedTestimon
 // POST /api/testimonials - Create a new testimonial (with image upload)
 export async function POST(req: NextRequest): Promise<NextResponse<RouteApiType<FormattedTestimonial>>> {
   try {
-    await authenticateToken(req.headers)
+    await authenticateToken()
     const formData = await req.formData()
 
     // Validate fields with zod
