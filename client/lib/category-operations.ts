@@ -1,3 +1,5 @@
+"server only"
+
 import { db } from "@/db"
 import { categories } from "@/db/schema"
 import type { Category } from "@/db/schema"

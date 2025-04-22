@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Testimonial } from "@/db/schema"
-import { createTestimonial, listTestimonials } from "@/lib/testimonialOperations"
+import { createTestimonial, listTestimonials } from "@/lib/testimonial-operations"
 import type { RouteApiType } from "@/types/api"
 
 // GET /api/testimonials - List all testimonials

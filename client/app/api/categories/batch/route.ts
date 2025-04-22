@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import type { Category } from "@/db/schema"
-import { batchCreateCategories } from "@/lib/categoryOperations"
+import { batchCreateCategories } from "@/lib/category-operations"
 import type { RouteApiType } from "@/types/api"
 
 // POST /api/categories/batch - Create multiple categories

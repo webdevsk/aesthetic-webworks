@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import type { Category } from "@/db/schema"
+import { deleteCategory, updateCategory } from "@/lib/category-operations"
 import type { RouteApiType } from "@/types/api"
-import { updateCategory, deleteCategory } from "@/lib/categoryOperations"
 
 // PUT /api/categories/:id - Update a category
 export async function PUT(

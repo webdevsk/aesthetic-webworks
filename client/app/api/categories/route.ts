@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import type { Category } from "@/db/schema"
+import { createCategory, listCategories } from "@/lib/category-operations"
 import type { RouteApiType } from "@/types/api"
-import { listCategories, createCategory } from "@/lib/categoryOperations"
 
 // GET /api/categories - Get all categories
 export async function GET(): Promise<NextResponse<RouteApiType<Category[]>>> {

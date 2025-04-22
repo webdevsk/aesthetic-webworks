@@ -16,7 +16,7 @@ A modern, full-stack web application showcasing a portfolio website with admin d
 
 ### Backend
 
-- **Express.js** with TypeScript
+- **Next.js 15** with TypeScript
 - **PostgreSQL** database
 - **Drizzle ORM** for database operations
 - **JWT** for authentication
@@ -38,7 +38,7 @@ A modern, full-stack web application showcasing a portfolio website with admin d
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js (v20 or higher)
 - PostgreSQL (v13 or higher)
 - pnpm (recommended) or npm
 
@@ -58,45 +58,24 @@ cd aesthetic-webworks
 cd client
 pnpm install
 
-# Install server dependencies
-cd ../server
-pnpm install
-```
-
 1. Set up environment variables:
-
-For server (.env):
 
 ```env
 DATABASE_URL=postgresql://username:password@localhost:5432/your_database
 JWT_SECRET=your_jwt_secret
-PORT=8000
-```
-
-For client (.env.local):
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
+IMGBB_API_KEY=your_imgbb_api_key
 ```
 
 1. Initialize the database:
 
 ```bash
-cd server
 pnpm db:push
-pnpm db:populate  # Populates the database with initial data
+pnpm db:populate  # Populates the database with initial data (Untested in Next.js server branch)
 ```
 
 ### Running the Application
 
-1. Start the server:
-
-```bash
-cd server
-pnpm dev
-```
-
-1. In a new terminal, start the client:
+1. Start the Next.js fullstack application:
 
 ```bash
 cd client
@@ -105,40 +84,22 @@ pnpm dev
 
 ## Development Scripts
 
-### Server
-
 - `pnpm dev` - Start development server
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm db:populate` - Populate database with initial data
 - `pnpm db:studio` - Open Drizzle Studio for database management
 - `pnpm lint` - Run linting
-- `pnpm format` - Format code
-
-### Client
-
-- `pnpm dev` - Start development server
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
-- `pnpm lint` - Run linting
 
 ## Project Structure
 
 ```md
 .
-├── client/                 # Frontend Next.js application
-│   ├── app/               # Next.js app directory
-│   ├── components/        # Reusable components
-│   ├── lib/              # Utility functions and hooks
-│   └── public/           # Static assets
-│
-└── server/                # Backend Express application
-    ├── src/
-    │   ├── routes/       # API routes
-    │   ├── controllers/  # Route controllers
-    │   ├── middleware/   # Custom middleware
-    │   └── db/          # Database configuration and schemas
-    └── dist/            # Compiled TypeScript
+client/                 # Frontend Next.js application
+├── app/               # Next.js app directory
+├── components/        # Reusable components
+├── lib/              # Utility functions and hooks
+└── public/           # Static assets
 ```
 
 ## Contributing

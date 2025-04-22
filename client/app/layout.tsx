@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={inter.className}>
-        <HolyLoader color="#525aff" height="2px" easing="ease" showSpinner={false} speed={300} initialPosition={0.08} />
+        {/* <HolyLoader color="#525aff" height="2px" easing="ease" showSpinner={false} speed={300} initialPosition={0.08} /> */}
         {children}
         <Toaster richColors position="bottom-right" />
       </body>

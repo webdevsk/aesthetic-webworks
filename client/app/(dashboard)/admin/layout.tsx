@@ -1,15 +1,8 @@
-import { cookies } from "next/headers"
 import Link from "next/link"
-import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { FolderKanban, Home, LayoutGrid, LogOut, MessageSquareQuote, Tags } from "lucide-react"
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const token = (await cookies()).get("token")
-  if (!token) {
-    redirect("/auth/signin")
-  }
-
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}

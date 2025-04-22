@@ -1,3 +1,5 @@
+"server only"
+
 import { db } from "@/db"
 import { testimonials } from "@/db/schema"
 import type { Testimonial } from "@/db/schema"

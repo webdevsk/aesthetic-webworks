@@ -1,3 +1,5 @@
+"server only"
+
 import { db } from "@/db"
 import { categories, projectCategories, projects } from "@/db/schema"
 import type { Project } from "@/db/schema"

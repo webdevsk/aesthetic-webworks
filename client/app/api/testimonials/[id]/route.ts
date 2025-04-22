@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Testimonial } from "@/db/schema"
-import { deleteTestimonial, updateTestimonial } from "@/lib/testimonialOperations"
+import { deleteTestimonial, updateTestimonial } from "@/lib/testimonial-operations"
 import type { RouteApiType } from "@/types/api"
 
 // PUT /api/testimonials/:id - Update a testimonial

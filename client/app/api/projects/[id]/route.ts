@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Project } from "@/db/schema"
-import { deleteProject, updateProject } from "@/lib/projectOperations"
+import { deleteProject, updateProject } from "@/lib/project-operations"
 import type { RouteApiType } from "@/types/api"
 
 export async function PUT(
