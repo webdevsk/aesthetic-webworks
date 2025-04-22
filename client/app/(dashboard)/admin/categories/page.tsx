@@ -16,9 +16,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { createCategory, deleteCategory, updateCategory } from "@/lib/actions"
+import { getCategories } from "@/lib/actions"
 import type { Category } from "@/lib/schemas"
-import { createCategory, deleteCategory, updateCategory } from "@/lib/server-actions"
-import { getCategories } from "@/lib/server-fetches"
 import { Edit, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -46,8 +46,8 @@ export default function CategoriesPage() {
     toast.promise(
       async () => {
         const result = await getCategories()
-        if ("error" in result) {
-          throw new Error(result.error.message)
+        if (!result.success) {
+          throw new Error(result.error)
         }
         setCategories(result.data)
       },
@@ -68,8 +68,8 @@ export default function CategoriesPage() {
         ? await updateCategory(selectedCategory.id, { title })
         : await createCategory({ title })
 
-      if ("error" in result) {
-        toast.error(result.error.message)
+      if (!result.success) {
+        toast.error(result.error)
         return
       }
 
@@ -90,8 +90,8 @@ export default function CategoriesPage() {
     setIsLoading(true)
     try {
       const result = await deleteCategory(category.id)
-      if ("error" in result) {
-        toast.error(result.error.message)
+      if (!result.success) {
+        toast.error(result.error)
         return
       }
 

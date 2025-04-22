@@ -13,8 +13,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<RouteApiType<Project>>> {
   try {
+    await authenticateToken()
     const { id } = await params
-    await authenticateToken(req.headers)
     const formData = await req.formData()
 
     // Extract and validate fields using zod
@@ -125,8 +125,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<RouteApiType<null>>> {
   try {
+    await authenticateToken()
     const { id } = await params
-    await authenticateToken(req.headers)
 
     // Delete associated categories first
     await db.delete(projectCategories).where(eq(projectCategories.projectId, parseInt(id)))

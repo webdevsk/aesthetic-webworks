@@ -4,5 +4,5 @@ import { redirect } from "next/navigation"
 export async function POST() {
   const cookieStore = await cookies()
   cookieStore.delete("token")
-  return redirect("/")
+  return redirect("/admin")
 }

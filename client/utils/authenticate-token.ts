@@ -1,10 +1,13 @@
-import jwt from "jsonwebtoken";
+import { cookies } from "next/headers"
+import { NextResponse } from "next/server"
+import { ErrorApiType } from "@/types/api"
+import jwt from "jsonwebtoken"
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"
 
 export interface AuthUser {
-  id: number;
-  username: string;
+  id: number
+  username: string
 }
 
 /**
@@ -12,18 +15,22 @@ export interface AuthUser {
  * Throws an error if authentication fails.
  * Usage: await authenticateToken(headers)
  */
-export async function authenticateToken(headers: Headers): Promise<AuthUser> {
-  const authHeader = headers.get("authorization");
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) {
-    throw new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-  }
-
+export async function authenticateToken(): Promise<NextResponse<ErrorApiType> | AuthUser> {
   try {
-    const user = jwt.verify(token, JWT_SECRET) as AuthUser;
-    return user;
-  } catch (err) {
-    throw new Response(JSON.stringify({ error: "Invalid token" }), { status: 403 });
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
+    if (!token) {
+      throw new Error("Authentication required")
+    }
+    const user = jwt.verify(token, JWT_SECRET) as AuthUser
+    return user
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      return NextResponse.json({ success: false, error: { code: "403", message: "Invalid token" } })
+    }
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, error: { code: "403", message: error.message } })
+    }
   }
+  return NextResponse.json({ success: false, error: { code: "403", message: "Invalid token" } })
 }

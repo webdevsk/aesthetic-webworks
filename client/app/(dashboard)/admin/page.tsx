@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { API_URLS } from "@/lib/api-urls"
-import { getCategories, getProjects, getTestimonials } from "@/lib/server-fetches"
+import { getProjects } from "@/lib/actions"
+import { getCategories } from "@/lib/actions"
+import { getTestimonials } from "@/lib/actions"
+import { toast } from "sonner"
 
 interface Stats {
   projects: number
@@ -19,8 +21,8 @@ export default function AdminPage() {
   })
 
   useEffect(() => {
-    async function fetchStats() {
-      try {
+    toast.promise(
+      async function fetchStats() {
         const [projectsRes, categoriesRes, testimonialsRes] = await Promise.all([
           getProjects(),
           getCategories(),
@@ -35,11 +37,13 @@ export default function AdminPage() {
           categories: categoriesRes.data.length,
           testimonials: testimonialsRes.data.length,
         })
-      } catch (error) {
-        console.error("Failed to fetch stats:", error)
+      },
+      {
+        loading: "Loading stats...",
+        success: "Stats loaded",
+        error: (err) => err.message || "Failed to fetch stats",
       }
-    }
-    fetchStats()
+    )
   }, [])
 
   return (

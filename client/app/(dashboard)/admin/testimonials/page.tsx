@@ -17,12 +17,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
+import { createTestimonial, deleteTestimonial, updateTestimonial } from "@/lib/actions"
+import { getTestimonials } from "@/lib/actions"
 import type { Testimonial } from "@/lib/schemas"
-import { createTestimonial, deleteTestimonial, updateTestimonial } from "@/lib/server-actions"
-import { getTestimonials } from "@/lib/server-fetches"
 import { cn } from "@/lib/utils"
 import { Edit, Plus, Trash2 } from "lucide-react"
-import { X } from "lucide-react"
 import { toast } from "sonner"
 
 export default function TestimonialsPage() {
@@ -42,8 +41,8 @@ export default function TestimonialsPage() {
     toast.promise(
       async () => {
         const result = await getTestimonials()
-        if ("error" in result) {
-          throw new Error(result.error.message)
+        if (!result.success) {
+          throw new Error(result.error)
         }
         setTestimonials(result.data)
       },
@@ -83,8 +82,8 @@ export default function TestimonialsPage() {
         ? await updateTestimonial(Number(selectedTestimonial.id), formData)
         : await createTestimonial(formData)
 
-      if ("error" in result) {
-        toast.error(result.error.message)
+      if (!result.success) {
+        toast.error(result.error)
         return
       }
 
@@ -93,6 +92,7 @@ export default function TestimonialsPage() {
       toast.success(selectedTestimonial ? "Testimonial updated" : "Testimonial created")
       fetchTestimonials()
     } catch (error) {
+      console.error("Failed to save testimonial:", error)
       toast.error("Failed to save testimonial")
     } finally {
       setIsLoading(false)
@@ -103,8 +103,8 @@ export default function TestimonialsPage() {
     setIsLoading(true)
     try {
       const result = await deleteTestimonial(Number(testimonial.id))
-      if ("error" in result) {
-        toast.error(result.error.message)
+      if (!result.success) {
+        toast.error(result.error)
         return
       }
 
@@ -113,6 +113,7 @@ export default function TestimonialsPage() {
       toast.success("Testimonial deleted")
       fetchTestimonials()
     } catch (error) {
+      console.error("Failed to delete testimonial:", error)
       toast.error("Failed to delete testimonial")
     } finally {
       setIsLoading(false)

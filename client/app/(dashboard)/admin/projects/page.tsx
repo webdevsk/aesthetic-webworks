@@ -17,12 +17,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { MultiCombobox } from "@/components/ui/multi-combobox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { createCategory, createProject, deleteProject, updateProject } from "@/lib/actions"
+import { getProjects } from "@/lib/actions"
+import { getCategories } from "@/lib/actions"
 import type { Category, Project } from "@/lib/schemas"
-import { createCategory, createProject, deleteProject, updateProject } from "@/lib/server-actions"
-import { getCategories } from "@/lib/server-fetches"
-import { getProjects } from "@/lib/server-fetches"
 import { cn } from "@/lib/utils"
-import { Edit, Plus, Trash2, X } from "lucide-react"
+import { Edit, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 export default function ProjectsPage() {
@@ -51,8 +51,8 @@ export default function ProjectsPage() {
 
   async function fetchCategories() {
     const result = await getCategories()
-    if ("error" in result) {
-      toast.error(result.error.message)
+    if (!result.success) {
+      toast.error(result.error)
       return
     }
     setCategories(result.data)
@@ -62,15 +62,15 @@ export default function ProjectsPage() {
     toast.promise(
       async () => {
         const result = await getProjects()
-        if ("error" in result) {
-          throw new Error(result.error.message)
+        if (!result.success) {
+          throw new Error(result.error)
         }
         setProjects(result.data)
       },
       {
         loading: "Loading projects...",
         success: "Projects loaded",
-        error: (err) => err.message || "Failed to fetch projects",
+        error: (err) => err || "Failed to fetch projects",
       }
     )
   }
@@ -113,7 +113,7 @@ export default function ProjectsPage() {
       await Promise.all(
         newCategories.map(async (title) => {
           const result = await createCategory({ title })
-          if ("error" in result) {
+          if (!result.success) {
             throw new Error(`Failed to create category: ${result.error}`)
           }
         })
@@ -123,8 +123,8 @@ export default function ProjectsPage() {
         ? await updateProject(Number(selectedProject.id), formData)
         : await createProject(formData)
 
-      if ("error" in result) {
-        throw new Error(result.error.message)
+      if (!result.success) {
+        throw new Error(result.error)
       }
 
       setIsOpen(false)
@@ -143,22 +143,26 @@ export default function ProjectsPage() {
 
   async function handleDelete(project: Project) {
     setIsLoading(true)
-    try {
-      const result = await deleteProject(Number(project.id))
-      if ("error" in result) {
-        toast.error(result.error.message)
-        return
-      }
+    toast.promise(
+      async () => {
+        const result = await deleteProject(Number(project.id))
+        if (!result.success) {
+          setIsLoading(false)
+          throw new Error(result.error)
+        }
+        setIsDeleteDialogOpen(false)
 
-      setIsDeleteDialogOpen(false)
-      setSelectedProject(null)
-      toast.success("Project deleted")
-      fetchProjects()
-    } catch (error) {
-      toast.error("Failed to delete project")
-    } finally {
-      setIsLoading(false)
-    }
+        setSelectedProject(null)
+        toast.success("Project deleted")
+        fetchProjects()
+        setIsLoading(false)
+      },
+      {
+        loading: "Deleting project...",
+        success: "Project deleted",
+        error: (err) => err || "Failed to delete project",
+      }
+    )
   }
 
   useEffect(() => {

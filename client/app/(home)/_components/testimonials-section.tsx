@@ -76,6 +76,7 @@ function TestimonialComponent({ id, author: { name, company, image }, content }:
   })
   return (
     <motion.div
+      key={id}
       ref={target}
       style={{ ["--progress" as string]: scrollYProgress }}
       className="scale-[calc(0.8_+_(var(--progress)_*_0.2))] rounded-[32px] bg-transparent p-[4vw] text-background ring-1 ring-[#fff3]">

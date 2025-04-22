@@ -60,7 +60,7 @@ export async function GET(): Promise<NextResponse<RouteApiType<Array<Project & {
 // POST /api/projects - Create a new project (with file upload)
 export async function POST(req: NextRequest): Promise<NextResponse<RouteApiType<Project>>> {
   try {
-    await authenticateToken(req.headers)
+    await authenticateToken()
     const formData = await req.formData()
     console.log(Object.fromEntries(formData))
     // Extract and validate fields using zod
@@ -147,6 +147,9 @@ export async function POST(req: NextRequest): Promise<NextResponse<RouteApiType<
     return NextResponse.json({ success: true, data: project })
   } catch (error) {
     console.error(error)
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, error: { message: error.message ?? "Failed to create project" } })
+    }
     return NextResponse.json({ success: false, error: { message: "Failed to create project" } })
   }
 }
